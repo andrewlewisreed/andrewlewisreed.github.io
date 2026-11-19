@@ -158,7 +158,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <div class="warn" id="warn"></div>
 </div>
 <script>
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));
 const ORDER = ["saigon","dupont","funky","wardcamp"];
 const COLORS = {saigon:"#4caf50", dupont:"#64b5f6", funky:"#fbc02d", wardcamp:"#ff9800"};
 const NAMES = {saigon:"Saigon", dupont:"Mr. DuPont", funky:"Funky Pair", wardcamp:"Wardcamp"};
@@ -303,6 +303,14 @@ function rankLine(rank, total){
   const of = (total != null && Number.isFinite(Number(total))) ? Math.round(Number(total)).toLocaleString("en-US") : "—";
   return "#" + r.toLocaleString("en-US") + " of " + of;
 }
+function reachLine(r){
+  const heard = num(r.heard_nodes);
+  const two = num(r.two_way);
+  const mi = (r.max_link_mi != null && Number.isFinite(Number(r.max_link_mi)))
+    ? Number(r.max_link_mi).toFixed(1) + " mi"
+    : "—";
+  return `${heard} heard · ${two} two-way · ${mi}`;
+}
 function renderBoard(){
   const el = document.getElementById("board");
   if(!el) return;
@@ -330,6 +338,7 @@ function renderBoard(){
       <div class="place"><div class="n">${place}</div><div class="of">of ${esc(String(n))}</div></div>
       <div class="body">
         <div class="who">${grade}<span>${esc(r.short || r.name || r.slug)}</span></div>
+        <div class="meta">${reachLine(r)}</div>
         <div class="meta"><b>${pct01(r.usefulness_score, 0)}</b> usefulness
           · ${rankLine(r.relay_rank, r.ranked_of || total)} relays/24h</div>
         <div class="meta">Traffic share ${pct01(r.traffic_share_score, 1)} · Bridge ${pct01(r.bridge_score, 1)}</div>
