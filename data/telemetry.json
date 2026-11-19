@@ -1,0 +1,64 @@
+{
+    "updated_at":  "2026-11-19T02:48:23-08:00",
+    "source":  "reed-export/repeater_status.json",
+    "repeaters":  [
+                      {
+                          "name":  "Saigon",
+                          "short":  "Saigon",
+                          "slug":  "saigon",
+                          "ok":  true,
+                          "stale":  false,
+                          "polled_at":  "2026-11-19T02:43:51-08:00",
+                          "ok_at":  "2026-11-19T02:43:51-08:00",
+                          "battery_v":  4.08,
+                          "temperature_c":  15.7,
+                          "uptime_s":  302866,
+                          "noise_floor":  -118,
+                          "last_snr":  12.0,
+                          "last_rssi":  -61,
+                          "tx_duty_pct":  1.96,
+                          "rx_duty_pct":  12.71
+                      },
+                      {
+                          "name":  "Mr. DuPont",
+                          "short":  "DuPont",
+                          "slug":  "dupont",
+                          "ok":  true,
+                          "stale":  false,
+                          "polled_at":  "2026-11-19T02:45:54-08:00",
+                          "ok_at":  "2026-11-19T02:45:54-08:00",
+                          "battery_v":  4.18,
+                          "uptime_s":  42167,
+                          "noise_floor":  -96,
+                          "last_snr":  -4.0,
+                          "last_rssi":  -80,
+                          "tx_duty_pct":  1.95,
+                          "rx_duty_pct":  8.5
+                      },
+                      {
+                          "name":  "Funky Pair",
+                          "short":  "Funky",
+                          "slug":  "funky",
+                          "ok":  true,
+                          "stale":  false,
+                          "polled_at":  "2026-11-19T02:48:23-08:00",
+                          "ok_at":  "2026-11-19T02:48:23-08:00",
+                          "battery_v":  3.99,
+                          "uptime_s":  122323,
+                          "noise_floor":  -118,
+                          "last_snr":  8.75,
+                          "last_rssi":  -107,
+                          "tx_duty_pct":  2.74,
+                          "rx_duty_pct":  15.09
+                      },
+                      {
+                          "name":  "Wardcamp",
+                          "short":  "Wardcamp",
+                          "slug":  "wardcamp",
+                          "ok":  false,
+                          "stale":  true,
+                          "polled_at":  "2026-11-19T02:48:23-08:00",
+                          "ok_at":  null
+                      }
+                  ]
+}
