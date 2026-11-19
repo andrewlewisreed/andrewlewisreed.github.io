@@ -23,14 +23,16 @@ jobs:
           python-version: "3.12"
       - name: Fetch CoreScope and compute REED scores
         run: python scripts/update_data.py
-      - name: Commit data.json if changed
+      - name: Refresh weekly REED baseline if needed
+        run: python scripts/update_baseline.py
+      - name: Commit data files if changed
         run: |
-          if git diff --quiet -- data.json; then
+          git add data.json data/reed_baseline.json
+          if git diff --cached --quiet; then
             echo "No change."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
-          git add data.json
-          git commit -m "Update data.json"
+          git commit -m "Update REED data and weekly baseline"
           git push
