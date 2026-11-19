@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>REED Mesh · CoreScope</title>
-<meta name="description" content="Live CoreScope metrics for the REED MeshCore repeaters.">
+<meta name="description" content="Live CoreScope and radio telemetry for the REED MeshCore repeaters.">
 <meta name="theme-color" content="#111317">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,14 +16,15 @@
   --good:#4caf50; --ok:#8bc34a; --warn:#fbc02d; --hot:#ff9800; --bad:#f44336;
   --acc:#64b5f6; --track:#2e343c;
   --font:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --saigon:#4caf50; --dupont:#64b5f6; --funky:#fbc02d; --wardcamp:#ff9800;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 var(--font);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 48px}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 56px}
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:22px}
 header h1{margin:0;font-size:26px;font-weight:650;letter-spacing:-.4px}
 header p{margin:4px 0 0;color:var(--mut);font-size:13.5px}
-header .updated{color:var(--mut);font-size:12.5px}
+header .updated{color:var(--mut);font-size:12.5px;text-align:right}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 @media(max-width:800px){.grid{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px;display:flex;flex-direction:column;gap:14px;min-height:100%}
@@ -51,19 +52,18 @@ header .updated{color:var(--mut);font-size:12.5px}
 .spark{width:100%;height:44px;display:block}
 .spark path.fill{fill:rgba(76,175,80,.16)}
 .spark path.line{fill:none;stroke:var(--good);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
-.metrics{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
-.ringside{display:flex;align-items:center;gap:10px}
-.ring{width:86px;height:86px}
-.ring text{font-family:var(--font)}
-.ring .pct{font-size:15px;font-weight:700;fill:var(--txt)}
-.ring .lbl{font-size:7.5px;font-weight:600;fill:var(--mut);letter-spacing:.6px}
-.obs{display:flex;flex-direction:column;gap:2px}
-.obs .v{font-size:22px;font-weight:700;letter-spacing:-.4px}
-.obs .k{font-size:11px;color:var(--mut);font-weight:500}
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end}
+.gauge{display:flex;flex-direction:column;align-items:center}
+.gauge svg{width:100%;max-width:220px;height:auto;display:block}
+.gauge .g-lab{margin-top:-6px;font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .stat{background:var(--card2);border-radius:10px;padding:9px 10px}
 .stat .k{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
 .stat .v{font-size:17px;font-weight:650;margin-top:2px;letter-spacing:-.3px}
+.tel-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tel-head .k{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.tel-head .when{font-size:11px;color:var(--mut)}
+.tel-un{color:var(--mut);font-size:13px;background:var(--card2);border-radius:10px;padding:10px 12px}
 .snr{display:grid;grid-template-columns:1fr 120px;gap:14px;align-items:end}
 @media(max-width:520px){.snr{grid-template-columns:1fr}}
 .snrbar{position:relative;height:10px;background:var(--track);border-radius:999px;overflow:hidden;margin-top:8px}
@@ -72,10 +72,28 @@ header .updated{color:var(--mut);font-size:12.5px}
 .hist{display:flex;align-items:flex-end;gap:3px;height:46px}
 .hist i{flex:1;background:rgba(100,181,246,.55);border-radius:3px 3px 0 0;min-height:2px}
 .hist-lbl{display:flex;justify-content:space-between;font-size:9.5px;color:var(--mut);margin-top:3px}
+section.block{margin-top:28px}
+section.block h2{margin:0 0 4px;font-size:18px;font-weight:650;letter-spacing:-.2px}
+section.block .sub{margin:0 0 12px;color:var(--mut);font-size:13px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px 14px}
+.table-wrap{overflow:auto}
+table.tel{width:100%;border-collapse:collapse;font-size:13.5px}
+table.tel th{text-align:left;font-size:10.5px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;padding:6px 10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.tel td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.tel tr:last-child td{border-bottom:0}
+table.tel td.mut{color:var(--mut)}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media(max-width:800px){.charts{grid-template-columns:1fr}}
+.chart h3{margin:0 0 8px;font-size:14px;font-weight:650}
+.chart svg{width:100%;height:160px;display:block}
+.chart .empty{color:var(--mut);font-size:13px;padding:24px 8px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:12px;color:var(--mut)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
 footer{margin-top:22px;color:var(--mut);font-size:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
 a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 .warn{color:var(--hot);font-size:12px;margin-top:10px}
-.note{margin-top:10px;color:var(--mut);font-size:12.5px;max-width:820px}
+.note{margin-top:10px;color:var(--mut);font-size:12.5px;max-width:880px}
 </style>
 </head>
 <body>
@@ -83,20 +101,44 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <header>
   <div>
     <h1>REED Mesh</h1>
-    <p>Live CoreScope metrics for the REED MeshCore repeaters</p>
+    <p>Live CoreScope metrics and radio telemetry for the REED MeshCore repeaters</p>
   </div>
-  <div class="updated" id="updated">Updated —</div>
+  <div class="updated">
+    <div id="updated">Updated —</div>
+    <div id="tel-updated"></div>
+  </div>
 </header>
 <section class="grid" id="cards"><div class="card">Loading…</div></section>
-<p class="note">Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime is 7-day availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline.</p>
+<p class="note">Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry (battery, temperature, uptime, noise, last SNR/RSSI, TX/RX airtime) comes from the hourly repeater login when it is available.</p>
+
+<section class="block">
+  <h2>Radio telemetry</h2>
+  <p class="sub" id="tel-sub">Hourly status from the repeaters. Companion nodes are not published here.</p>
+  <div class="panel table-wrap" id="tel-table"><div class="tel-un">Telemetry unavailable.</div></div>
+  <div class="charts">
+    <div class="panel chart">
+      <h3>Battery (V)</h3>
+      <div id="chart-batt"><div class="empty">No telemetry history yet.</div></div>
+    </div>
+    <div class="panel chart">
+      <h3>Noise floor (dBm)</h3>
+      <div id="chart-noise"><div class="empty">No telemetry history yet.</div></div>
+    </div>
+  </div>
+  <div class="legend" id="chart-legend"></div>
+</section>
+
 <footer>
-  <span>Data: <a href="https://corescope.wcmesh.com/" rel="noopener">CoreScope</a> · read-only</span>
+  <span>Data: <a href="https://corescope.wcmesh.com/" rel="noopener">CoreScope</a> · radio telemetry when available · read-only</span>
   <span>No locations or neighbor names are published here.</span>
 </footer>
 <div class="warn" id="warn"></div>
 </div>
 <script>
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ORDER = ["saigon","dupont","funky","wardcamp"];
+const COLORS = {saigon:"#4caf50", dupont:"#64b5f6", funky:"#fbc02d", wardcamp:"#ff9800"};
+const NAMES = {saigon:"Saigon", dupont:"Mr. DuPont", funky:"Funky Pair", wardcamp:"Wardcamp"};
 function ago(iso){
   if(!iso) return "—";
   const m = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
@@ -133,20 +175,43 @@ function spark(vals){
   const fill=line+" L"+pts[pts.length-1][0].toFixed(1)+","+(h)+" L"+pts[0][0].toFixed(1)+","+h+" Z";
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path class="fill" d="${fill}"/><path class="line" d="${line}"/></svg>`;
 }
-function ring(pct){
-  const r=30, cx=43, cy=40, C=2*Math.PI*r;
-  const ok = pct != null && Number.isFinite(Number(pct));
-  const v = ok ? Math.max(0, Math.min(100, Number(pct))) : 0;
-  const dash = (v/100)*C;
-  const col = !ok ? "var(--faint)" : v >= 80 ? "var(--good)" : v >= 50 ? "var(--warn)" : "var(--bad)";
-  const label = ok ? Math.round(v) + "%" : "—";
-  return `<svg class="ring" viewBox="0 0 86 86" aria-hidden="true">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--track)" stroke-width="8"/>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round"
-      stroke-dasharray="${dash.toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>
-    <text class="pct" x="${cx}" y="${cy+1}" text-anchor="middle" dominant-baseline="middle">${esc(label)}</text>
-    <text class="lbl" x="${cx}" y="78" text-anchor="middle">UPTIME 7D</text>
-  </svg>`;
+function polar(cx, cy, r, t){
+  // t=0 at left (min), t=1 at right (max), arc over the top
+  const a = Math.PI * (1 - t);
+  return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
+}
+function arcPath(cx, cy, r, t0, t1){
+  const [x0,y0]=polar(cx,cy,r,t0), [x1,y1]=polar(cx,cy,r,t1);
+  const large = (t1-t0) > 1 ? 1 : 0;
+  // screen y-down: top semicircle from left to right uses sweep=0 (counterclockwise)
+  return `M${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 ${large} 0 ${x1.toFixed(2)},${y1.toFixed(2)}`;
+}
+function colorAt(segments, v, fallback){
+  let col = fallback || "var(--mut)";
+  for(const s of segments){ if(v >= s.from) col = s.color; }
+  return col;
+}
+function semiGauge(value, min, max, segments, label, text){
+  const cx=110, cy=108, r=82, rTrk=82;
+  const ok = value != null && Number.isFinite(Number(value));
+  const t = ok ? Math.max(0, Math.min(1, (Number(value)-min)/(max-min))) : 0;
+  const segs = (segments||[]).map((s,i,arr)=>{
+    const t0 = Math.max(0, Math.min(1, (s.from-min)/(max-min)));
+    const next = arr[i+1] ? arr[i+1].from : max;
+    const t1 = Math.max(t0, Math.min(1, (next-min)/(max-min)));
+    return `<path d="${arcPath(cx,cy,rTrk,t0,t1)}" fill="none" stroke="${s.color}" stroke-width="12" stroke-linecap="butt"/>`;
+  }).join("");
+  const track = `<path d="${arcPath(cx,cy,rTrk,0,1)}" fill="none" stroke="var(--track)" stroke-width="12" stroke-linecap="butt"/>`;
+  const [nx,ny] = polar(cx, cy, r-22, t);
+  const needleCol = ok ? colorAt(segments, Number(value)) : "var(--mut)";
+  const needle = ok ? `<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${needleCol}" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="5.5" fill="${needleCol}"/>
+    <circle cx="${cx}" cy="${cy}" r="2.2" fill="var(--card)"/>` : `<circle cx="${cx}" cy="${cy}" r="5.5" fill="var(--faint)"/>`;
+  const val = esc(ok ? text : "—");
+  return `<div class="gauge"><svg viewBox="0 0 220 130" aria-label="${esc(label)} ${val}">
+    ${track}${ok?segs:""}${needle}
+    <text x="${cx}" y="86" text-anchor="middle" fill="var(--txt)" font-size="22" font-weight="700" font-family="var(--font)">${val}</text>
+  </svg><div class="g-lab">${esc(label)}</div></div>`;
 }
 function hist(counts, bins){
   const arr = counts || [];
@@ -157,18 +222,54 @@ function hist(counts, bins){
   return `<div><div class="hist">${bars}</div><div class="hist-lbl"><span>${lo} dB</span><span>SNR</span><span>${hi} dB</span></div></div>`;
 }
 function snrScale(v){
-  // map -10..+15 dB onto 8%..100% of the bar
   if(v == null || !Number.isFinite(Number(v))) return 0;
   return Math.max(8, Math.min(100, ((Number(v) + 10) / 25) * 100));
 }
-let DATA = null, BASELINE = null;
+function fmtUptime(s){
+  if(s == null || !Number.isFinite(Number(s))) return "—";
+  s = Math.max(0, Math.floor(Number(s)));
+  const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600);
+  if(d > 0) return d + "d " + h + "h";
+  const m = Math.floor((s%3600)/60);
+  if(h > 0) return h + "h " + m + "m";
+  return m + "m";
+}
+function telOf(slug){
+  if(!TEL || !TEL.repeaters) return null;
+  const list = Array.isArray(TEL.repeaters) ? TEL.repeaters : [];
+  return list.find(r => r && r.slug === slug) || null;
+}
+function telBlock(slug){
+  const t = telOf(slug);
+  if(!TEL_OK) return `<div class="tel-un">Telemetry unavailable.</div>`;
+  if(!t) return `<div class="tel-un">No radio telemetry for this repeater yet.</div>`;
+  const when = t.ok_at || t.polled_at;
+  const stale = t.stale || t.ok === false;
+  const tag = stale ? " · stale" : (when ? " · " + ago(when) : "");
+  return `<div>
+    <div class="tel-head"><div class="k">Radio telemetry</div><div class="when">${when ? pt(when) : "—"}${tag}</div></div>
+    <div class="stats" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-top:8px">
+      <div class="stat"><div class="k">Battery</div><div class="v">${t.battery_v != null ? num(t.battery_v,2)+" V" : "—"}</div></div>
+      <div class="stat"><div class="k">Temp</div><div class="v">${t.temperature_c != null ? num(t.temperature_c,1)+" °C" : "—"}</div></div>
+      <div class="stat"><div class="k">Uptime</div><div class="v">${fmtUptime(t.uptime_s)}</div></div>
+      <div class="stat"><div class="k">Noise</div><div class="v">${t.noise_floor != null ? num(t.noise_floor,0)+" dBm" : "—"}</div></div>
+      <div class="stat"><div class="k">Last SNR</div><div class="v">${t.last_snr != null ? num(t.last_snr,1)+" dB" : "—"}</div></div>
+      <div class="stat"><div class="k">Last RSSI</div><div class="v">${t.last_rssi != null ? num(t.last_rssi,0)+" dBm" : "—"}</div></div>
+      <div class="stat"><div class="k">TX airtime</div><div class="v">${t.tx_duty_pct != null ? num(t.tx_duty_pct,1)+" %" : "—"}</div></div>
+      <div class="stat"><div class="k">RX airtime</div><div class="v">${t.rx_duty_pct != null ? num(t.rx_duty_pct,1)+" %" : "—"}</div></div>
+    </div>
+  </div>`;
+}
+const UP_SEGS = [{from:0,color:"#f44336"},{from:50,color:"#fbc02d"},{from:80,color:"#4caf50"}];
+const SNR_SEGS = [{from:-10,color:"#f44336"},{from:-2,color:"#ff9800"},{from:3,color:"#fbc02d"},{from:8,color:"#4caf50"}];
+let DATA = null, BASELINE = null, TEL = null, TEL_HIST = null, TEL_OK = false;
 function baseOf(slug, key){
   const r = BASELINE && BASELINE.repeaters && BASELINE.repeaters[slug];
   return r ? r[key] : null;
 }
 function render(){
   const d = DATA, offH = d.offline_after_hours || 24, bins = d.snr_bins || [-20,-10,-5,0,5,10,20];
-  const order = d.order || ["saigon","dupont","funky","wardcamp"];
+  const order = d.order || ORDER;
   const by = Object.fromEntries((d.repeaters||[]).map(r => [r.slug, r]));
   const list = order.map(s => by[s]).filter(Boolean);
   document.getElementById("cards").innerHTML = list.map(r => {
@@ -179,6 +280,8 @@ function render(){
       : on ? `<span class="pill on"><i></i>Online · ${ago(r.last_heard)}</span>`
            : `<span class="pill off"><i></i>Offline · ${ago(r.last_heard)}</span>`;
     const mi = r.max_link_mi != null ? Number(r.max_link_mi).toFixed(1) + " mi" : "—";
+    const upTxt = r.avail_pct != null && Number.isFinite(Number(r.avail_pct)) ? Math.round(Number(r.avail_pct)) + "%" : "—";
+    const snrTxt = r.snr_median != null && Number.isFinite(Number(r.snr_median)) ? Number(r.snr_median).toFixed(1) : "—";
     return `<article class="card">
       <div class="top"><h2><a href="${esc(r.corescope_url)}" rel="noopener">${esc(r.name)}</a></h2>${pill}</div>
       <div class="hero">
@@ -188,14 +291,19 @@ function render(){
         </div>
         ${spark(r.relays_spark)}
       </div>
-      <div class="metrics">
-        <div class="ringside">${ring(r.avail_pct)}<div class="obs"><div class="v">${num(r.observers)}</div><div class="k">Observers</div></div></div>
-        <div class="stats">
-          <div class="stat"><div class="k">Heard 7d</div><div class="v">${num(r.heard_nodes)}</div></div>
-          <div class="stat"><div class="k">Two-way</div><div class="v">${num(r.two_way)}${r.two_way != null ? badge(r.two_way, baseOf(r.slug,"two_way")) : ""}</div></div>
-          <div class="stat"><div class="k">Farthest</div><div class="v">${esc(mi)}</div></div>
-        </div>
+      <div class="gauges">
+        ${semiGauge(r.avail_pct, 0, 100, UP_SEGS, "Uptime 7d", upTxt)}
+        ${semiGauge(r.snr_median, -10, 15, SNR_SEGS, "Median SNR", snrTxt === "—" ? "—" : snrTxt + " dB")}
       </div>
+      <div class="stats">
+        <div class="stat"><div class="k">Observers</div><div class="v">${num(r.observers)}</div></div>
+        <div class="stat"><div class="k">Heard 7d</div><div class="v">${num(r.heard_nodes)}</div></div>
+        <div class="stat"><div class="k">Two-way</div><div class="v">${num(r.two_way)}${r.two_way != null ? badge(r.two_way, baseOf(r.slug,"two_way")) : ""}</div></div>
+        <div class="stat"><div class="k">Farthest</div><div class="v">${esc(mi)}</div></div>
+        <div class="stat"><div class="k">Top SNR</div><div class="v">${r.snr_top != null ? num(r.snr_top,1)+" dB" : "—"}</div></div>
+        <div class="stat"><div class="k">Links</div><div class="v">${num(r.snr_count)}</div></div>
+      </div>
+      ${telBlock(r.slug)}
       <div class="snr">
         <div>
           <div class="k" style="text-transform:uppercase;letter-spacing:.6px;font-size:10.5px;font-weight:600;color:var(--mut)">Neighbor SNR</div>
@@ -206,8 +314,92 @@ function render(){
       </div>
     </article>`;
   }).join("") || '<div class="card">No data yet.</div>';
-  document.getElementById("updated").textContent = "Updated " + (d.updated_at ? pt(d.updated_at) : "—");
+  document.getElementById("updated").textContent = "CoreScope " + (d.updated_at ? pt(d.updated_at) : "—");
   document.getElementById("warn").textContent = (d.errors && d.errors.length) ? "Some CoreScope lookups failed on the last update; showing the previous values for those." : "";
+  renderTelemetry();
+}
+function renderTelemetry(){
+  const sub = document.getElementById("tel-sub");
+  const box = document.getElementById("tel-table");
+  const upd = document.getElementById("tel-updated");
+  if(!TEL_OK){
+    sub.textContent = "Radio telemetry is not published yet. CoreScope metrics above are still live.";
+    box.innerHTML = '<div class="tel-un">Telemetry unavailable.</div>';
+    upd.textContent = "";
+    document.getElementById("chart-batt").innerHTML = '<div class="empty">No telemetry history yet.</div>';
+    document.getElementById("chart-noise").innerHTML = '<div class="empty">No telemetry history yet.</div>';
+    document.getElementById("chart-legend").innerHTML = "";
+    return;
+  }
+  upd.textContent = "Telemetry " + (TEL.updated_at ? pt(TEL.updated_at) : "—");
+  sub.textContent = "Hourly status from the repeaters. Companion nodes are not published here.";
+  const rows = ORDER.map(slug => {
+    const t = telOf(slug);
+    const name = (t && t.name) || NAMES[slug] || slug;
+    if(!t) return `<tr><td>${esc(name)}</td><td colspan="9" class="mut">No radio telemetry yet</td></tr>`;
+    const stale = t.stale || t.ok === false;
+    return `<tr>
+      <td>${esc(name)}${stale ? ' <span class="pill unk"><i></i>stale</span>' : ""}</td>
+      <td>${t.battery_v != null ? num(t.battery_v,2) : "—"}</td>
+      <td>${t.temperature_c != null ? num(t.temperature_c,1) : "—"}</td>
+      <td>${fmtUptime(t.uptime_s)}</td>
+      <td>${t.noise_floor != null ? num(t.noise_floor,0) : "—"}</td>
+      <td>${t.last_snr != null ? num(t.last_snr,1) : "—"}</td>
+      <td>${t.last_rssi != null ? num(t.last_rssi,0) : "—"}</td>
+      <td>${t.tx_duty_pct != null ? num(t.tx_duty_pct,1) : "—"}</td>
+      <td>${t.rx_duty_pct != null ? num(t.rx_duty_pct,1) : "—"}</td>
+      <td class="mut">${t.ok_at || t.polled_at ? pt(t.ok_at || t.polled_at) : "—"}</td>
+    </tr>`;
+  }).join("");
+  box.innerHTML = `<table class="tel">
+    <thead><tr><th>Repeater</th><th>Batt V</th><th>Temp °C</th><th>Uptime</th><th>Noise dBm</th><th>SNR dB</th><th>RSSI dBm</th><th>TX %</th><th>RX %</th><th>Polled</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+  drawHistory("chart-batt", "battery_v", 2);
+  drawHistory("chart-noise", "noise_floor", 0);
+  document.getElementById("chart-legend").innerHTML = ORDER.map(s => `<span><i style="background:${COLORS[s]}"></i>${esc(NAMES[s])}</span>`).join("");
+}
+function seriesFor(key){
+  const hist = TEL_HIST && TEL_HIST.repeaters;
+  if(!hist) return {};
+  const out = {};
+  for(const slug of ORDER){
+    const pts = hist[slug] || [];
+    out[slug] = pts.map(p => {
+      const t = p && p.t ? Date.parse(p.t) : NaN;
+      const v = p ? Number(p[key]) : NaN;
+      return {t, v};
+    }).filter(p => Number.isFinite(p.t) && Number.isFinite(p.v));
+  }
+  return out;
+}
+function drawHistory(elId, key, digits){
+  const el = document.getElementById(elId);
+  const series = seriesFor(key);
+  const any = ORDER.some(s => (series[s]||[]).length >= 1);
+  if(!any){ el.innerHTML = '<div class="empty">No telemetry history yet.</div>'; return; }
+  const all = ORDER.flatMap(s => series[s]||[]);
+  const tMin = Math.min(...all.map(p=>p.t)), tMax = Math.max(...all.map(p=>p.t));
+  let vMin = Math.min(...all.map(p=>p.v)), vMax = Math.max(...all.map(p=>p.v));
+  if(vMin === vMax){ vMin -= 1; vMax += 1; }
+  const w=520,h=160,pl=44,pr=12,ptop=12,pb=24;
+  const x = t => pl + ((t-tMin)/Math.max(1,tMax-tMin))*(w-pl-pr);
+  const y = v => ptop + (1 - (v-vMin)/(vMax-vMin))*(h-ptop-pb);
+  const grid = [0,0.5,1].map(f=>{
+    const vv = vMin + (vMax-vMin)*f;
+    const yy = y(vv).toFixed(1);
+    return `<line x1="${pl}" x2="${w-pr}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/>
+      <text x="${pl-6}" y="${yy}" text-anchor="end" dominant-baseline="middle" fill="var(--mut)" font-size="10">${vv.toFixed(digits)}</text>`;
+  }).join("");
+  const paths = ORDER.map(slug=>{
+    const pts = series[slug]||[];
+    if(pts.length < 1) return "";
+    const d = pts.map((p,i)=> (i?"L":"M")+x(p.t).toFixed(1)+","+y(p.v).toFixed(1)).join(" ");
+    const dots = pts.map(p=> `<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="2.2" fill="${COLORS[slug]}"/>`).join("");
+    return `<path d="${d}" fill="none" stroke="${COLORS[slug]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${dots}`;
+  }).join("");
+  const tLabel = (ms, anchor) => `<text x="${anchor==="end"?w-pr:pl}" y="${h-6}" text-anchor="${anchor}" fill="var(--mut)" font-size="10">${esc(pt(new Date(ms).toISOString()))}</text>`;
+  el.innerHTML = `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${esc(key)} history">${grid}${paths}${tLabel(tMin,"start")}${tMax!==tMin?tLabel(tMax,"end"):""}</svg>`;
 }
 async function load(){
   try{
@@ -217,6 +409,18 @@ async function load(){
       const b = await fetch("data/week_baseline.json?t=" + Date.now(), {cache:"no-store"});
       BASELINE = b.ok ? await b.json() : null;
     }catch(e){ BASELINE = null; }
+    TEL_OK = false; TEL = null; TEL_HIST = null;
+    try{
+      const t = await fetch("data/telemetry.json?t=" + Date.now(), {cache:"no-store"});
+      if(t.ok){
+        TEL = await t.json();
+        TEL_OK = !!(TEL && (TEL.repeaters || TEL.updated_at));
+      }
+    }catch(e){ TEL_OK = false; }
+    try{
+      const h = await fetch("data/telemetry_history.json?t=" + Date.now(), {cache:"no-store"});
+      TEL_HIST = h.ok ? await h.json() : null;
+    }catch(e){ TEL_HIST = null; }
     render();
   }catch(e){ document.getElementById("warn").textContent = "Couldn't load data.json."; }
 }
