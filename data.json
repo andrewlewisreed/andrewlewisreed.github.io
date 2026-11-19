@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-19T11:26:55Z",
+ "updated_at": "2026-11-19T11:26:23Z",
  "repeaters": [
   {
    "name": "Mr. DuPont",
@@ -7,11 +7,20 @@
    "slug": "dupont",
    "pubkey": "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
-   "last_heard": "2026-11-19T11:26:39Z",
+   "last_heard": "2026-11-19T11:26:11Z",
    "online": true,
-   "relays_24h": 4358,
+   "relays_24h": 4356,
    "relays_1h": 63,
    "status_stale": false,
+   "usefulness_grade": "C",
+   "usefulness_score": 0.305835458750029,
+   "traffic_share_score": 0.09930730956433131,
+   "bridge_score": 0.04410441861944265,
+   "coverage_score": 0.8158717328193125,
+   "redundancy_score": 0.0634999644457086,
+   "usefulness_rank": 75,
+   "relay_rank": 59,
+   "ranked_of": 899,
    "heard_nodes": 64,
    "two_way": 54,
    "max_link_mi": 117.2,
@@ -34,8 +43,7 @@
    "avail_stale": false,
    "relays_spark": [
     4364,
-    4366,
-    4358
+    4356
    ]
   },
   {
@@ -44,11 +52,20 @@
    "slug": "saigon",
    "pubkey": "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
-   "last_heard": "2026-11-19T11:26:35Z",
+   "last_heard": "2026-11-19T11:26:24Z",
    "online": true,
    "relays_24h": 2740,
    "relays_1h": 36,
    "status_stale": false,
+   "usefulness_grade": "D",
+   "usefulness_score": 0.29142327910463517,
+   "traffic_share_score": 0.07093843835705536,
+   "bridge_score": 0.08269351336125826,
+   "coverage_score": 0.7950581520943596,
+   "redundancy_score": 0.0634999644457086,
+   "usefulness_rank": 85,
+   "relay_rank": 110,
+   "ranked_of": 899,
    "heard_nodes": 82,
    "two_way": 60,
    "max_link_mi": null,
@@ -70,8 +87,6 @@
    "avail_pct": 85.7,
    "avail_stale": false,
    "relays_spark": [
-    2740,
-    2737,
     2740
    ]
   },
@@ -86,6 +101,15 @@
    "relays_24h": 517,
    "relays_1h": 6,
    "status_stale": false,
+   "usefulness_grade": "D",
+   "usefulness_score": 0.19805240770670068,
+   "traffic_share_score": 0.011241314268989366,
+   "bridge_score": 0.018054280963500733,
+   "coverage_score": 0.7375990189078839,
+   "redundancy_score": 0.0,
+   "usefulness_rank": 209,
+   "relay_rank": 414,
+   "ranked_of": 899,
    "heard_nodes": 37,
    "two_way": 24,
    "max_link_mi": 67.9,
@@ -122,6 +146,15 @@
    "relays_24h": 804,
    "relays_1h": 6,
    "status_stale": false,
+   "usefulness_grade": "F",
+   "usefulness_score": 0.1379907425086706,
+   "traffic_share_score": 0.0076857201704083515,
+   "bridge_score": 0.0,
+   "coverage_score": 0.5294380504524577,
+   "redundancy_score": 0.0,
+   "usefulness_rank": 482,
+   "relay_rank": 307,
+   "ranked_of": 899,
    "heard_nodes": 19,
    "two_way": 7,
    "max_link_mi": 54.5,
@@ -166,5 +199,12 @@
   10,
   20
  ],
- "source": "https://corescope.wcmesh.com"
+ "source": "https://corescope.wcmesh.com",
+ "ranking": {
+  "source": "https://corescope.wcmesh.com",
+  "list": "role=repeater",
+  "repeaters_total": 899,
+  "usefulness": "CoreScope usefulness_score (grade is CoreScope usefulness_grade)",
+  "relays": "CoreScope relay_count_24h among role=repeater"
+ }
 }

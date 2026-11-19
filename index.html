@@ -41,7 +41,7 @@ header .updated{color:var(--mut);font-size:12.5px;text-align:right}
 .pill.unk{background:var(--card2);color:var(--mut);border:1px solid var(--line)}
 .pill.unk i{background:var(--mut)}
 .hero{display:grid;grid-template-columns:1fr 140px;gap:14px;align-items:end}
-@media(max-width:520px){.hero{grid-template-columns:1fr}}
+@media(max-width:520px){.hero{grid-template-columns:1fr}.hero .spark{max-height:40px}}
 .hero .k{font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.7px}
 .hero .n{font-size:44px;font-weight:700;letter-spacing:-1.2px;line-height:1;margin:2px 0}
 .hero .n small{font-size:15px;font-weight:600;color:var(--mut);margin-left:4px;letter-spacing:0}
@@ -49,13 +49,13 @@ header .updated{color:var(--mut);font-size:12.5px;text-align:right}
 .delta.up{color:var(--good);background:rgba(76,175,80,.12)}
 .delta.down{color:var(--bad);background:rgba(244,67,54,.12)}
 .delta.dim{color:var(--mut);background:var(--card2)}
-.spark{width:100%;height:44px;display:block}
+.spark{width:100%;height:44px;max-height:44px;display:block;overflow:hidden}
 .spark path.fill{fill:rgba(76,175,80,.16)}
 .spark path.line{fill:none;stroke:var(--good);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
-.gauges{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end}
-.gauge{display:flex;flex-direction:column;align-items:center}
-.gauge svg{width:100%;max-width:220px;height:auto;display:block}
-.gauge .g-lab{margin-top:-6px;font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;align-items:end;min-width:0}
+.gauge{display:flex;flex-direction:column;align-items:center;min-width:0;width:100%}
+.gauge svg{width:100%;max-width:240px;height:auto;display:block;aspect-ratio:200/120;overflow:visible}
+.gauge .g-lab{margin-top:0;font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .stat{background:var(--card2);border-radius:10px;padding:9px 10px}
 .stat .k{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
@@ -90,6 +90,28 @@ table.tel td.mut{color:var(--mut)}
 .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:12px;color:var(--mut)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.board{margin:0 0 18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px}
+.board-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;margin-bottom:12px}
+.board-head h2{margin:0;font-size:15px;font-weight:650;letter-spacing:-.2px}
+.board-head p{margin:0;color:var(--mut);font-size:12px;max-width:640px}
+.board-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media(max-width:800px){.board-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.board-grid{grid-template-columns:1fr}}
+.r-card{background:var(--card2);border-radius:12px;padding:10px 11px 9px;display:flex;gap:10px;align-items:flex-start;min-width:0}
+.r-card .place{flex:0 0 auto;text-align:center;min-width:44px}
+.r-card .place .n{font-size:22px;font-weight:700;letter-spacing:-.8px;line-height:1}
+.r-card .place .of{font-size:10px;color:var(--mut);margin-top:2px;white-space:nowrap}
+.r-card .body{min-width:0;flex:1}
+.r-card .who{display:flex;align-items:center;gap:6px;font-weight:650;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grade{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;font-size:11px;font-weight:700;flex:0 0 auto}
+.grade.A{background:rgba(76,175,80,.2);color:var(--good)}
+.grade.B{background:rgba(139,195,74,.2);color:var(--ok)}
+.grade.C{background:rgba(251,192,45,.2);color:var(--warn)}
+.grade.D{background:rgba(255,152,0,.2);color:var(--hot)}
+.grade.F,.grade.E{background:rgba(244,67,54,.2);color:var(--bad)}
+.r-card .meta{margin-top:3px;font-size:11.5px;color:var(--mut);line-height:1.4}
+.r-card .meta b{color:var(--txt);font-weight:650}
+.board.unavail{color:var(--mut);font-size:13px}
 footer{margin-top:22px;color:var(--mut);font-size:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
 a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 .warn{color:var(--hot);font-size:12px;margin-top:10px}
@@ -108,8 +130,9 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
     <div id="tel-updated"></div>
   </div>
 </header>
+<section class="board" id="board"><div class="board-unavail">Loading CoreScope ranking…</div></section>
 <section class="grid" id="cards"><div class="card">Loading…</div></section>
-<p class="note">Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry (battery, temperature, uptime, noise, last SNR/RSSI, TX/RX airtime) comes from the hourly repeater login when it is available.</p>
+<p class="note">The ranking strip uses CoreScope’s own usefulness grade and score, and rank among CoreScope repeaters by usefulness and by relays in the last 24 hours. Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry (battery, temperature, uptime, noise, last SNR/RSSI, TX/RX airtime) comes from the hourly repeater login when it is available.</p>
 
 <section class="block">
   <h2>Radio telemetry</h2>
@@ -173,44 +196,46 @@ function spark(vals){
   });
   const line=pts.map((pt,i)=> (i?"L":"M")+pt[0].toFixed(1)+","+pt[1].toFixed(1)).join(" ");
   const fill=line+" L"+pts[pts.length-1][0].toFixed(1)+","+(h)+" L"+pts[0][0].toFixed(1)+","+h+" Z";
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path class="fill" d="${fill}"/><path class="line" d="${line}"/></svg>`;
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="140" height="44" preserveAspectRatio="none" aria-hidden="true"><path class="fill" d="${fill}"/><path class="line" d="${line}"/></svg>`;
 }
+function clamp01(t){ return Math.max(0, Math.min(1, t)); }
+// t=0 at the left (180°), t=1 at the right (0°), arc over the top.
 function polar(cx, cy, r, t){
-  // t=0 at left (min), t=1 at right (max), arc over the top
-  const a = Math.PI * (1 - t);
+  const a = Math.PI * (1 - clamp01(t));
   return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
 }
 function arcPath(cx, cy, r, t0, t1){
   const [x0,y0]=polar(cx,cy,r,t0), [x1,y1]=polar(cx,cy,r,t1);
-  const large = (t1-t0) > 1 ? 1 : 0;
-  // screen y-down: top semicircle from left to right uses sweep=0 (counterclockwise)
-  return `M${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 ${large} 0 ${x1.toFixed(2)},${y1.toFixed(2)}`;
+  const large = Math.abs(t1 - t0) > 1 ? 1 : 0;
+  // SVG y-down: clockwise (sweep=1) from left to right follows the TOP semicircle.
+  return `M${x0.toFixed(3)} ${y0.toFixed(3)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(3)} ${y1.toFixed(3)}`;
 }
-function colorAt(segments, v, fallback){
-  let col = fallback || "var(--mut)";
-  for(const s of segments){ if(v >= s.from) col = s.color; }
-  return col;
-}
-function semiGauge(value, min, max, segments, label, text){
-  const cx=110, cy=108, r=82, rTrk=82;
-  const ok = value != null && Number.isFinite(Number(value));
-  const t = ok ? Math.max(0, Math.min(1, (Number(value)-min)/(max-min))) : 0;
-  const segs = (segments||[]).map((s,i,arr)=>{
-    const t0 = Math.max(0, Math.min(1, (s.from-min)/(max-min)));
-    const next = arr[i+1] ? arr[i+1].from : max;
-    const t1 = Math.max(t0, Math.min(1, (next-min)/(max-min)));
-    return `<path d="${arcPath(cx,cy,rTrk,t0,t1)}" fill="none" stroke="${s.color}" stroke-width="12" stroke-linecap="butt"/>`;
-  }).join("");
-  const track = `<path d="${arcPath(cx,cy,rTrk,0,1)}" fill="none" stroke="var(--track)" stroke-width="12" stroke-linecap="butt"/>`;
-  const [nx,ny] = polar(cx, cy, r-22, t);
-  const needleCol = ok ? colorAt(segments, Number(value)) : "var(--mut)";
-  const needle = ok ? `<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${needleCol}" stroke-width="2.6" stroke-linecap="round"/>
-    <circle cx="${cx}" cy="${cy}" r="5.5" fill="${needleCol}"/>
-    <circle cx="${cx}" cy="${cy}" r="2.2" fill="var(--card)"/>` : `<circle cx="${cx}" cy="${cy}" r="5.5" fill="var(--faint)"/>`;
+const GAUGE_PALETTE = ["#f44336","#ff9800","#fbc02d","#8bc34a","#4caf50"];
+function semiGauge(value, min, max, _segs, label, text){
+  const cx=100, cy=74, r=56, sw=11, gap=0.02;
+  const ok = value != null && Number.isFinite(Number(value)) && max > min;
+  const t = ok ? clamp01((Number(value) - min) / (max - min)) : 0;
+  const n = 5;
+  const usable = 1 - gap * (n - 1);
+  const span = usable / n;
+  let parts = "";
+  for(let i=0;i<n;i++){
+    const t0 = i * (span + gap);
+    const t1 = t0 + span;
+    parts += `<path d="${arcPath(cx,cy,r,t0,t1)}" fill="none" stroke="${GAUGE_PALETTE[i]}" stroke-width="${sw}" stroke-linecap="butt"/>`;
+  }
+  const tip = r - sw - 6;
+  const rot = (t * 180).toFixed(2);
+  const needleCol = ok ? GAUGE_PALETTE[Math.max(0, Math.min(n-1, Math.floor(t * n - 1e-9)))] : "var(--mut)";
+  const needle = `<g transform="rotate(${rot} ${cx} ${cy})">
+      <polygon points="${(cx-tip).toFixed(1)},${cy} ${cx+5},${cy-3.2} ${cx+5},${cy+3.2}" fill="${needleCol}"/>
+    </g>
+    <circle cx="${cx}" cy="${cy}" r="6.5" fill="var(--card)" stroke="${ok ? needleCol : "var(--faint)"}" stroke-width="2.4"/>
+    <circle cx="${cx}" cy="${cy}" r="2.3" fill="${ok ? needleCol : "var(--faint)"}"/>`;
   const val = esc(ok ? text : "—");
-  return `<div class="gauge"><svg viewBox="0 0 220 130" aria-label="${esc(label)} ${val}">
-    ${track}${ok?segs:""}${needle}
-    <text x="${cx}" y="86" text-anchor="middle" fill="var(--txt)" font-size="22" font-weight="700" font-family="var(--font)">${val}</text>
+  return `<div class="gauge"><svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(label)} ${val}">
+    ${parts}${needle}
+    <text x="${cx}" y="106" text-anchor="middle" fill="var(--txt)" font-size="16" font-weight="700" font-family="var(--font)">${val}</text>
   </svg><div class="g-lab">${esc(label)}</div></div>`;
 }
 function hist(counts, bins){
@@ -267,6 +292,56 @@ function baseOf(slug, key){
   const r = BASELINE && BASELINE.repeaters && BASELINE.repeaters[slug];
   return r ? r[key] : null;
 }
+
+function pct01(v, d){
+  if(v == null || !Number.isFinite(Number(v))) return "—";
+  return (Number(v) * 100).toLocaleString("en-US", {maximumFractionDigits: d == null ? 1 : d, minimumFractionDigits: 0}) + "%";
+}
+function rankLine(rank, total){
+  if(rank == null || !Number.isFinite(Number(rank))) return "—";
+  const r = Math.round(Number(rank));
+  const of = (total != null && Number.isFinite(Number(total))) ? Math.round(Number(total)).toLocaleString("en-US") : "—";
+  return "#" + r.toLocaleString("en-US") + " of " + of;
+}
+function renderBoard(){
+  const el = document.getElementById("board");
+  if(!el) return;
+  const d = DATA || {};
+  const list = (d.order || ORDER).map(s => (d.repeaters||[]).find(r => r.slug === s)).filter(Boolean);
+  const any = list.some(r => r.usefulness_rank != null || r.usefulness_grade || r.usefulness_score != null || r.relay_rank != null);
+  if(!any){
+    el.className = "board unavail";
+    el.innerHTML = "CoreScope ranking unavailable.";
+    return;
+  }
+  const total = (d.ranking && d.ranking.repeaters_total) || list.find(r => r.ranked_of != null)?.ranked_of;
+  const n = (total != null) ? Number(total).toLocaleString("en-US") : "—";
+  const cards = list.slice().sort((a,b)=>{
+    const ra = a.usefulness_rank, rb = b.usefulness_rank;
+    if(ra == null && rb == null) return 0;
+    if(ra == null) return 1;
+    if(rb == null) return -1;
+    return ra - rb;
+  }).map(r => {
+    const g = r.usefulness_grade ? String(r.usefulness_grade).trim().toUpperCase() : "";
+    const grade = g ? `<span class="grade ${esc(g)}">${esc(g)}</span>` : "";
+    const place = r.usefulness_rank != null ? "#" + Number(r.usefulness_rank).toLocaleString("en-US") : "—";
+    return `<article class="r-card">
+      <div class="place"><div class="n">${place}</div><div class="of">of ${esc(String(n))}</div></div>
+      <div class="body">
+        <div class="who">${grade}<span>${esc(r.short || r.name || r.slug)}</span></div>
+        <div class="meta"><b>${pct01(r.usefulness_score, 0)}</b> usefulness
+          · ${rankLine(r.relay_rank, r.ranked_of || total)} relays/24h</div>
+        <div class="meta">Traffic share ${pct01(r.traffic_share_score, 1)} · Bridge ${pct01(r.bridge_score, 1)}</div>
+      </div>
+    </article>`;
+  }).join("");
+  el.className = "board";
+  el.innerHTML = `<div class="board-head">
+      <h2>CoreScope ranking</h2>
+      <p>Among ${esc(String(n))} CoreScope repeaters. Grade and usefulness score are CoreScope’s own. Relay rank is by CoreScope relays in the last 24 hours.</p>
+    </div><div class="board-grid">${cards}</div>`;
+}
 function render(){
   const d = DATA, offH = d.offline_after_hours || 24, bins = d.snr_bins || [-20,-10,-5,0,5,10,20];
   const order = d.order || ORDER;
@@ -316,6 +391,7 @@ function render(){
   }).join("") || '<div class="card">No data yet.</div>';
   document.getElementById("updated").textContent = "CoreScope " + (d.updated_at ? pt(d.updated_at) : "—");
   document.getElementById("warn").textContent = (d.errors && d.errors.length) ? "Some CoreScope lookups failed on the last update; showing the previous values for those." : "";
+  renderBoard();
   renderTelemetry();
 }
 function renderTelemetry(){

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fetch public CoreScope data for the REED mesh repeaters and write data.json.
 
-Metrics (no REED score, no grades, no coordinates or neighbor names):
+Metrics (no invented scores, no coordinates or neighbor names):
   relays_24h / relays_1h, last_heard, online (24h window)
   heard_nodes: unique 7-day reach links with we_hear > 0
   two_way: bidir reach links with max(we_hear, they_hear) >= 20
@@ -10,6 +10,10 @@ Metrics (no REED score, no grades, no coordinates or neighbor names):
   avail_pct: /analytics?days=7 computedStats.availabilityPct
   snr_median / snr_top / snr_hist: neighbor avg_snr values only
   relays_spark: recent relays_24h samples accumulated in data/relays_history.json
+  CoreScope ranking (from /api/nodes?role=repeater): usefulness_grade/score,
+  traffic_share_score, bridge_score, coverage_score, redundancy_score,
+  usefulness_rank and relay_rank among that repeater list. Other nodes'
+  names and coordinates are never stored.
 
 Only public CoreScope data is used. Coordinates, neighbor names, and locations
 are never written. Stdlib only. Max 2 parallel requests with 429/503 backoff.
@@ -158,6 +162,95 @@ def avail_pct(analytics):
         return None
 
 
+
+def _num(v):
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def competition_ranks(pairs):
+    """Higher score is better. Competition ranking (1,2,2,4). pairs: (key, score)."""
+    ordered = sorted(((k, s) for k, s in pairs if s is not None), key=lambda x: x[1], reverse=True)
+    out = {}
+    last_s, last_rank = object(), 0
+    for i, (k, s) in enumerate(ordered, 1):
+        if s != last_s:
+            last_rank, last_s = i, s
+        out[k] = last_rank
+    return out, len(ordered)
+
+
+def corescope_ranks(listing):
+    """Rank our repeaters from the CoreScope repeater list. Store no other names or coords."""
+    our = {pk.lower() for *_, pk in REPEATERS}
+    nodes = (listing or {}).get("nodes") or []
+    useful, relays = [], []
+    scores = {}
+    for n in nodes:
+        if (n or {}).get("role") != "repeater":
+            continue
+        pk = str(n.get("public_key") or "").lower()
+        if not pk:
+            continue
+        us, rc = _num(n.get("usefulness_score")), _num(n.get("relay_count_24h"))
+        if us is not None:
+            useful.append((pk, us))
+        if rc is not None:
+            relays.append((pk, rc))
+        if pk in our:
+            grade = n.get("usefulness_grade")
+            if grade is not None:
+                grade = str(grade).strip().upper() or None
+            scores[pk] = {
+                "usefulness_grade": grade,
+                "usefulness_score": us,
+                "traffic_share_score": _num(n.get("traffic_share_score")),
+                "bridge_score": _num(n.get("bridge_score")),
+                "coverage_score": _num(n.get("coverage_score")),
+                "redundancy_score": _num(n.get("redundancy_score")),
+            }
+    u_rank, u_total = competition_ranks(useful)
+    r_rank, r_total = competition_ranks(relays)
+    # Prefer counts.repeaters / total from the API when present
+    total = None
+    counts = (listing or {}).get("counts") or {}
+    for cand in (counts.get("repeaters"), (listing or {}).get("total"), u_total, r_total):
+        try:
+            total = int(cand)
+            if total > 0:
+                break
+        except (TypeError, ValueError):
+            continue
+    out = {}
+    for pk, row in scores.items():
+        row = dict(row)
+        row["usefulness_rank"] = u_rank.get(pk)
+        row["relay_rank"] = r_rank.get(pk)
+        row["ranked_of"] = total
+        out[pk] = row
+    return out, total
+
+
+def scores_from_node(node):
+    if not isinstance(node, dict):
+        return {}
+    grade = node.get("usefulness_grade")
+    if grade is not None:
+        grade = str(grade).strip().upper() or None
+    return {
+        "usefulness_grade": grade,
+        "usefulness_score": _num(node.get("usefulness_score")),
+        "traffic_share_score": _num(node.get("traffic_share_score")),
+        "bridge_score": _num(node.get("bridge_score")),
+        "coverage_score": _num(node.get("coverage_score")),
+        "redundancy_score": _num(node.get("redundancy_score")),
+    }
+
+
 def load_json(path, default):
     try:
         with open(path, encoding="utf-8") as fh:
@@ -202,7 +295,8 @@ def fmt_rly(n):
 
 def main():
     now = datetime.now(timezone.utc)
-    urls = []
+    list_url = f"{BASE}/api/nodes?role=repeater&limit=2000"
+    urls = [list_url]
     for _n, _s, _g, pk in REPEATERS:
         b = f"{BASE}/api/nodes/{pk}"
         urls += [b, b + "/reach", b + "/neighbors", b + "/health", b + "/analytics?days=7"]
@@ -218,6 +312,17 @@ def main():
         for u, data, err in ex.map(job, urls):
             results[u] = (data, err)
 
+    list_d, list_e = results[list_url]
+    rank_map, rank_total = {}, None
+    if list_d is not None:
+        rank_map, rank_total = corescope_ranks(list_d)
+        if list_d.get("has_more"):
+            errors_early = [f"repeater list: truncated ({len((list_d or {}).get('nodes') or [])} of {list_d.get('total')})"]
+        else:
+            errors_early = []
+    else:
+        errors_early = [f"repeater list: {list_e}"]
+
     old = {}
     try:
         old = {r["slug"]: r for r in load_json(OUT, {}).get("repeaters", [])}
@@ -227,7 +332,7 @@ def main():
     if not isinstance(history, dict):
         history = {}
 
-    reps, errors = [], []
+    reps, errors = [], list(errors_early)
     for name, short, slug, pk in REPEATERS:
         b = f"{BASE}/api/nodes/{pk}"
         node_d, node_e = results[b]
@@ -248,6 +353,7 @@ def main():
                 "relays_1h": n.get("relay_count_1h"),
                 "status_stale": False,
             })
+            e.update(scores_from_node(n))
         else:
             errors.append(f"{short} node: {node_e}")
             for k in ("last_heard", "relays_24h", "relays_1h"):
@@ -255,6 +361,14 @@ def main():
             lh = parse_ts(e.get("last_heard"))
             e["online"] = bool(lh and (now - lh).total_seconds() < OFFLINE_AFTER_H * 3600)
             e["status_stale"] = True
+            # scores may still be filled from the repeater list below
+
+        ranked = rank_map.get(pk.lower()) or {}
+        for k, v in ranked.items():
+            if v is not None or e.get(k) is None:
+                e[k] = v
+        if e.get("ranked_of") is None and rank_total:
+            e["ranked_of"] = rank_total
 
         if reach_d is not None:
             e.update(reach_metrics(reach_d))
@@ -309,6 +423,13 @@ def main():
         f"{r['short']} {fmt_rly(r.get('relays_24h'))} rly/24h" if i == 0 else f"{r['short']} {fmt_rly(r.get('relays_24h'))}"
         for i, r in enumerate(ordered)
     )
+    ranking = {
+        "source": BASE,
+        "list": "role=repeater",
+        "repeaters_total": rank_total,
+        "usefulness": "CoreScope usefulness_score (grade is CoreScope usefulness_grade)",
+        "relays": "CoreScope relay_count_24h among role=repeater",
+    }
     payload = {
         "repeaters": reps,
         "order": order,
@@ -317,6 +438,7 @@ def main():
         "offline_after_hours": OFFLINE_AFTER_H,
         "snr_bins": list(SNR_BINS),
         "source": BASE,
+        "ranking": ranking,
     }
     old_full = load_json(OUT, {})
     same = {k: v for k, v in old_full.items() if k != "updated_at"} == payload
