@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-19T10:30:12Z",
+ "updated_at": "2026-11-19T11:26:55Z",
  "repeaters": [
   {
    "name": "Mr. DuPont",
@@ -7,24 +7,24 @@
    "slug": "dupont",
    "pubkey": "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
-   "last_heard": "2026-11-19T10:30:02Z",
+   "last_heard": "2026-11-19T11:26:39Z",
    "online": true,
-   "relays_24h": 4366,
-   "relays_1h": 118,
+   "relays_24h": 4358,
+   "relays_1h": 63,
    "status_stale": false,
    "heard_nodes": 64,
    "two_way": 54,
    "max_link_mi": 117.2,
    "reach_stale": false,
-   "snr_median": 3.7,
+   "snr_median": 3.5,
    "snr_top": 8.3,
-   "snr_count": 63,
+   "snr_count": 64,
    "snr_hist": [
     0,
     5,
     4,
     43,
-    11,
+    12,
     0
    ],
    "snr_stale": false,
@@ -34,7 +34,8 @@
    "avail_stale": false,
    "relays_spark": [
     4364,
-    4366
+    4366,
+    4358
    ]
   },
   {
@@ -43,12 +44,12 @@
    "slug": "saigon",
    "pubkey": "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
-   "last_heard": "2026-11-19T10:28:55Z",
+   "last_heard": "2026-11-19T11:26:35Z",
    "online": true,
-   "relays_24h": 2737,
-   "relays_1h": 77,
+   "relays_24h": 2740,
+   "relays_1h": 36,
    "status_stale": false,
-   "heard_nodes": 81,
+   "heard_nodes": 82,
    "two_way": 60,
    "max_link_mi": null,
    "reach_stale": false,
@@ -66,11 +67,12 @@
    "snr_stale": false,
    "observers": 42,
    "observers_stale": false,
-   "avail_pct": 86.3,
+   "avail_pct": 85.7,
    "avail_stale": false,
    "relays_spark": [
     2740,
-    2737
+    2737,
+    2740
    ]
   },
   {
@@ -79,10 +81,10 @@
    "slug": "funky",
    "pubkey": "2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0",
-   "last_heard": "2026-11-19T10:11:36Z",
+   "last_heard": "2026-11-19T10:41:59Z",
    "online": true,
-   "relays_24h": 523,
-   "relays_1h": 25,
+   "relays_24h": 517,
+   "relays_1h": 6,
    "status_stale": false,
    "heard_nodes": 37,
    "two_way": 24,
@@ -102,10 +104,11 @@
    "snr_stale": false,
    "observers": 44,
    "observers_stale": false,
-   "avail_pct": 87.5,
+   "avail_pct": 86.3,
    "avail_stale": false,
    "relays_spark": [
-    523
+    523,
+    517
    ]
   },
   {
@@ -114,10 +117,10 @@
    "slug": "wardcamp",
    "pubkey": "f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571",
-   "last_heard": "2026-11-19T09:13:14Z",
+   "last_heard": "2026-11-19T11:16:08Z",
    "online": true,
-   "relays_24h": 814,
-   "relays_1h": 23,
+   "relays_24h": 804,
+   "relays_1h": 6,
    "status_stale": false,
    "heard_nodes": 19,
    "two_way": 7,
@@ -135,12 +138,13 @@
     0
    ],
    "snr_stale": false,
-   "observers": 40,
+   "observers": 41,
    "observers_stale": false,
-   "avail_pct": 22.6,
+   "avail_pct": 23.8,
    "avail_stale": false,
    "relays_spark": [
-    814
+    814,
+    804
    ]
   }
  ],
@@ -150,7 +154,7 @@
   "funky",
   "wardcamp"
  ],
- "summary": "REED mesh: Saigon 2.7k rly/24h, DuPont 4.4k, Funky 523, Wardcamp 814",
+ "summary": "REED mesh: Saigon 2.7k rly/24h, DuPont 4.4k, Funky 517, Wardcamp 804",
  "errors": [],
  "offline_after_hours": 24,
  "snr_bins": [
