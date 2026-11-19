@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-19T09:07:47Z",
+ "updated_at": "2026-11-19T09:10:06Z",
  "repeaters": [
   {
    "name": "Mr. DuPont",
@@ -7,12 +7,12 @@
    "slug": "dupont",
    "pubkey": "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
-   "last_heard": "2026-11-19T09:06:40Z",
+   "last_heard": "2026-11-19T09:09:51Z",
    "online": true,
-   "usefulness_score": 0.301,
+   "usefulness_score": 0.302,
    "usefulness_grade": "C",
-   "relays_24h": 4289,
-   "relays_1h": 68,
+   "relays_24h": 4283,
+   "relays_1h": 70,
    "status_stale": false,
    "reed": {
     "total": 71,
@@ -31,11 +31,11 @@
    "slug": "saigon",
    "pubkey": "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
-   "last_heard": "2026-11-19T09:05:33Z",
+   "last_heard": "2026-11-19T09:09:41Z",
    "online": true,
    "usefulness_score": 0.288,
    "usefulness_grade": "D",
-   "relays_24h": 2686,
+   "relays_24h": 2682,
    "relays_1h": 43,
    "status_stale": false,
    "reed": {
@@ -59,7 +59,7 @@
    "online": true,
    "usefulness_score": 0.198,
    "usefulness_grade": "D",
-   "relays_24h": 496,
+   "relays_24h": 495,
    "relays_1h": 4,
    "status_stale": false,
    "reed": {
@@ -83,8 +83,8 @@
    "online": true,
    "usefulness_score": 0.137,
    "usefulness_grade": "F",
-   "relays_24h": 793,
-   "relays_1h": 5,
+   "relays_24h": 792,
+   "relays_1h": 6,
    "status_stale": false,
    "reed": {
     "total": 5,
