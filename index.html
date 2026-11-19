@@ -158,7 +158,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <div class="warn" id="warn"></div>
 </div>
 <script>
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ORDER = ["saigon","dupont","funky","wardcamp"];
 const COLORS = {saigon:"#4caf50", dupont:"#64b5f6", funky:"#fbc02d", wardcamp:"#ff9800"};
 const NAMES = {saigon:"Saigon", dupont:"Mr. DuPont", funky:"Funky Pair", wardcamp:"Wardcamp"};
