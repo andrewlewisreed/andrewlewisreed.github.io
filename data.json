@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-19T10:26:43Z",
+ "updated_at": "2026-11-19T10:30:12Z",
  "repeaters": [
   {
    "name": "Mr. DuPont",
@@ -7,10 +7,10 @@
    "slug": "dupont",
    "pubkey": "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
-   "last_heard": "2026-11-19T10:24:50Z",
+   "last_heard": "2026-11-19T10:30:02Z",
    "online": true,
-   "relays_24h": 4364,
-   "relays_1h": 114,
+   "relays_24h": 4366,
+   "relays_1h": 118,
    "status_stale": false,
    "heard_nodes": 64,
    "two_way": 54,
@@ -33,7 +33,8 @@
    "avail_pct": 72.6,
    "avail_stale": false,
    "relays_spark": [
-    4364
+    4364,
+    4366
    ]
   },
   {
@@ -42,10 +43,10 @@
    "slug": "saigon",
    "pubkey": "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
-   "last_heard": "2026-11-19T10:23:48Z",
+   "last_heard": "2026-11-19T10:28:55Z",
    "online": true,
-   "relays_24h": 2740,
-   "relays_1h": 80,
+   "relays_24h": 2737,
+   "relays_1h": 77,
    "status_stale": false,
    "heard_nodes": 81,
    "two_way": 60,
@@ -68,7 +69,8 @@
    "avail_pct": 86.3,
    "avail_stale": false,
    "relays_spark": [
-    2740
+    2740,
+    2737
    ]
   },
   {
