@@ -24,6 +24,8 @@ header p{margin:2px 0 18px;color:var(--mut)}
 .pill.off{background:rgba(239,68,68,.15);color:var(--off);border:1px solid rgba(239,68,68,.4)}
 .pill.unk{background:#263241;color:var(--mut);border:1px solid var(--line)}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stats4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:620px){.stats4{grid-template-columns:repeat(2,1fr)}}
 .stat{background:var(--card2);border-radius:10px;padding:9px 10px}
 .stat .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
 .stat .v{font-size:18px;font-weight:700;margin-top:2px}
@@ -68,7 +70,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <div class="explain">
 <p><b>How it's scored (0–100):</b> <b>Two-way links (0–50)</b> counts neighbors that hear the repeater <i>and</i> are heard back (each link weighted by how balanced it is; 30 balanced links = full marks). <b>Link quality (0–50)</b> is the median signal-to-noise of its 5 best neighbors (−7 dB = 0, +8 dB = full marks).</p>
 <div class="legend"><span class="gA">A ≥ 85</span><span class="gB">B ≥ 70</span><span class="gC">C ≥ 55</span><span class="gD">D ≥ 40</span><span class="gF">F &lt; 40</span></div>
-<p>Status cards: <b>Online</b> means CoreScope heard the repeater in the last 24 h. Usefulness is CoreScope's own 0–1 score. <b>▲▼</b> is the change from the weekly baseline (refreshed the first update on or after Monday 8:05 AM PT).</p>
+<p>Status cards: <b>Online</b> means CoreScope heard the repeater in the last 24 h. Usefulness is CoreScope's own 0–1 score. <b>Reach:</b> unique nodes heard in the last 7 days, two-way neighbors (same ≥20-packet bidir rule as the score), and farthest link in miles when CoreScope has a distance. <b>▲▼</b> is the change from the weekly baseline (refreshed the first update on or after Monday 8:05 AM PT).</p>
 </div>
 </section>
 
@@ -101,6 +103,13 @@ function weekBadge(slug, total){
   if(d < 0) return '<span class="delta down">▼' + d + "</span>";
   return '<span class="delta dim">±0</span>';
 }
+function reachBits(r){
+  const rh = r.reach || {};
+  const nodes = rh.nodes != null ? Number(rh.nodes).toLocaleString("en-US") : "—";
+  const nbr = rh.neighbors != null ? Number(rh.neighbors).toLocaleString("en-US") : "—";
+  const mi = (rh.max_link_mi != null && Number.isFinite(Number(rh.max_link_mi))) ? Number(rh.max_link_mi).toFixed(1) + " mi" : "—";
+  return {nodes, nbr, mi};
+}
 function render(){
   const d = DATA, offH = d.offline_after_hours || 24;
   document.getElementById("cards").innerHTML = d.repeaters.map(r => {
@@ -113,12 +122,17 @@ function render(){
     return `<div class="card rep"><div class="top"><h2><a href="${esc(r.corescope_url)}" rel="noopener" style="color:inherit">${esc(r.name)}</a></h2>${pill}</div>
       <div class="stats"><div class="stat"><div class="k">Usefulness</div><div class="v">${us}${ug}</div></div>
       <div class="stat"><div class="k">Relays 24h</div><div class="v">${rel}</div></div>
-      <div class="stat"><div class="k">Last heard</div><div class="v" style="font-size:15px">${ago(r.last_heard)}</div></div></div></div>`;
+      <div class="stat"><div class="k">Last heard</div><div class="v" style="font-size:15px">${ago(r.last_heard)}</div></div></div>
+      ${r.reed || r.reach ? `<div class="stats stats4">${r.reed ? `<div class="stat"><div class="k">REED score</div><div class="v g g${G(r.reed.grade)}">${r.reed.total}<small>${esc(r.reed.grade)}</small>${weekBadge(r.slug, r.reed.total)}</div></div>` : `<div class="stat"><div class="k">REED score</div><div class="v">—</div></div>`}
+      <div class="stat"><div class="k">Heard 7d</div><div class="v">${reachBits(r).nodes}</div></div>
+      <div class="stat"><div class="k">Two-way</div><div class="v">${reachBits(r).nbr}</div></div>
+      <div class="stat"><div class="k">Farthest</div><div class="v" style="font-size:15px">${reachBits(r).mi}</div></div></div>` : ""}</div>`;
   }).join("");
   const scored = d.repeaters.filter(r => r.reed).sort((a,b) => b.reed.total - a.reed.total || a.short.localeCompare(b.short));
   document.getElementById("reed").innerHTML = scored.map(r => {
     const s = r.reed, g = G(s.grade), w = Math.max(2, Math.min(100, s.total));
-    return `<div class="row"><div class="nm">${esc(r.short)}<small>2-way ${s.two_way} · SNR ${s.quality}</small></div>
+    const rb = reachBits(r);
+    return `<div class="row"><div class="nm">${esc(r.short)}<small>2-way ${s.two_way} · SNR ${s.quality}<br>heard ${rb.nodes} · two-way ${rb.nbr} · farthest ${rb.mi}</small></div>
       <div class="bar" title="${s.total}/100"><span style="width:${w}%;background:${COL[g]}"></span></div>
       <div class="big g${g}">${s.total}<small>${g}</small>${weekBadge(r.slug, s.total)}</div></div>`;
   }).join("") || "<p>No scores yet.</p>";

@@ -8,6 +8,11 @@ REED score matches the meshcore-bot's local/reed_score.py (defaults):
                   padded with -10 dB to 5 values; med = median;
                   q = clamp((med + 7)/15*50, 0, 50)
   Total = round(two + q); grade A>=85 B>=70 C>=55 D>=40 else F.
+Reach (from the same /reach payload, no extra requests): unique nodes heard
+  in the last 7 days (links with we_hear > 0); two-way neighbor count (bidir
+  and max(we_hear, they_hear) >= 20, same rule as the score); farthest link
+  in miles from CoreScope's distance_km when present. Coordinates, node names,
+  and locations are never written.
 Only public CoreScope data is used. No locations are written.
 Stdlib only (no pip install needed).
 """
@@ -94,6 +99,34 @@ def reed_score(reach, neigh):
             "links": round(bal, 1), "median_snr": round(med, 1), "snr_links": len(snrs)}
 
 
+KM_TO_MI = 0.621371
+
+
+def reach_info(reach):
+    """Summarize 7-day RF reach. Never returns coordinates, names, or keys."""
+    links = (reach or {}).get("links") or []
+    nodes = 0
+    neighbors = 0
+    dists = []
+    for ln in links:
+        try:
+            we, they = float(ln.get("we_hear") or 0), float(ln.get("they_hear") or 0)
+        except (TypeError, ValueError):
+            we, they = 0.0, 0.0
+        if we > 0:
+            nodes += 1
+        if ln.get("bidir") and max(we, they) >= S["min_pkts"]:
+            neighbors += 1
+        dk = ln.get("distance_km")
+        if dk is not None:
+            try:
+                dists.append(float(dk))
+            except (TypeError, ValueError):
+                pass
+    farthest = round(max(dists) * KM_TO_MI, 1) if dists else None
+    return {"nodes": nodes, "neighbors": neighbors, "max_link_mi": farthest}
+
+
 def parse_ts(s):
     if not s:
         return None
@@ -163,6 +196,12 @@ def main():
             errors.append(f"{short} score: {reach_e or neigh_e}")
             e["reed"] = prev.get("reed")
             e["reed_stale"] = True
+        if reach_d is not None:
+            e["reach"] = reach_info(reach_d)
+            e["reach_stale"] = False
+        else:
+            e["reach"] = prev.get("reach")
+            e["reach_stale"] = True
         reps.append(e)
 
     scored = sorted([r for r in reps if r.get("reed")], key=lambda r: (-r["reed"]["total"], r["short"].lower()))

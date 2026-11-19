@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-19T09:10:06Z",
+ "updated_at": "2026-11-19T10:15:28Z",
  "repeaters": [
   {
    "name": "Mr. DuPont",
@@ -7,23 +7,29 @@
    "slug": "dupont",
    "pubkey": "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
-   "last_heard": "2026-11-19T09:09:51Z",
+   "last_heard": "2026-11-19T10:15:10Z",
    "online": true,
    "usefulness_score": 0.302,
    "usefulness_grade": "C",
-   "relays_24h": 4283,
-   "relays_1h": 70,
+   "relays_24h": 4355,
+   "relays_1h": 120,
    "status_stale": false,
    "reed": {
     "total": 71,
     "grade": "B",
-    "two_way": 29.4,
+    "two_way": 29.2,
     "quality": 41.7,
-    "links": 17.7,
+    "links": 17.5,
     "median_snr": 5.5,
     "snr_links": 36
    },
-   "reed_stale": false
+   "reed_stale": false,
+   "reach": {
+    "nodes": 64,
+    "neighbors": 54,
+    "max_link_mi": 117.2
+   },
+   "reach_stale": false
   },
   {
    "name": "Saigon Westminster",
@@ -31,23 +37,29 @@
    "slug": "saigon",
    "pubkey": "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
-   "last_heard": "2026-11-19T09:09:41Z",
+   "last_heard": "2026-11-19T10:15:10Z",
    "online": true,
-   "usefulness_score": 0.288,
+   "usefulness_score": 0.291,
    "usefulness_grade": "D",
-   "relays_24h": 2682,
-   "relays_1h": 43,
+   "relays_24h": 2738,
+   "relays_1h": 85,
    "status_stale": false,
    "reed": {
-    "total": 79,
+    "total": 80,
     "grade": "B",
-    "two_way": 39.4,
+    "two_way": 40.4,
     "quality": 39.5,
-    "links": 23.6,
+    "links": 24.2,
     "median_snr": 4.8,
     "snr_links": 20
    },
-   "reed_stale": false
+   "reed_stale": false,
+   "reach": {
+    "nodes": 81,
+    "neighbors": 60,
+    "max_link_mi": null
+   },
+   "reach_stale": false
   },
   {
    "name": "Funky Pair",
@@ -55,23 +67,29 @@
    "slug": "funky",
    "pubkey": "2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0",
-   "last_heard": "2026-11-19T08:55:57Z",
+   "last_heard": "2026-11-19T10:11:36Z",
    "online": true,
    "usefulness_score": 0.198,
    "usefulness_grade": "D",
-   "relays_24h": 495,
-   "relays_1h": 4,
+   "relays_24h": 522,
+   "relays_1h": 25,
    "status_stale": false,
    "reed": {
     "total": 46,
     "grade": "D",
-    "two_way": 10.2,
+    "two_way": 10.1,
     "quality": 36.1,
-    "links": 6.1,
+    "links": 6.0,
     "median_snr": 3.8,
     "snr_links": 9
    },
-   "reed_stale": false
+   "reed_stale": false,
+   "reach": {
+    "nodes": 37,
+    "neighbors": 24,
+    "max_link_mi": 67.9
+   },
+   "reach_stale": false
   },
   {
    "name": "Wardcamp",
@@ -79,12 +97,12 @@
    "slug": "wardcamp",
    "pubkey": "f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571",
-   "last_heard": "2026-11-19T08:27:15Z",
+   "last_heard": "2026-11-19T09:13:14Z",
    "online": true,
    "usefulness_score": 0.137,
    "usefulness_grade": "F",
-   "relays_24h": 792,
-   "relays_1h": 6,
+   "relays_24h": 811,
+   "relays_1h": 21,
    "status_stale": false,
    "reed": {
     "total": 5,
@@ -95,7 +113,13 @@
     "median_snr": -10.0,
     "snr_links": 2
    },
-   "reed_stale": false
+   "reed_stale": false,
+   "reach": {
+    "nodes": 19,
+    "neighbors": 7,
+    "max_link_mi": 54.5
+   },
+   "reach_stale": false
   }
  ],
  "reed_order": [
@@ -104,7 +128,7 @@
   "funky",
   "wardcamp"
  ],
- "summary": "REED score: Saigon 79B, DuPont 71B, Funky 46D, Wardcamp 5F",
+ "summary": "REED score: Saigon 80B, DuPont 71B, Funky 46D, Wardcamp 5F",
  "errors": [],
  "offline_after_hours": 24,
  "source": "https://corescope.wcmesh.com"
