@@ -97,19 +97,23 @@ table.tel td.mut{color:var(--mut)}
 .board-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 @media(max-width:800px){.board-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:420px){.board-grid{grid-template-columns:1fr}}
-.r-card{background:var(--card2);border-radius:12px;padding:10px 11px 9px;display:flex;gap:10px;align-items:flex-start;min-width:0}
-.r-card .place{flex:0 0 auto;text-align:center;min-width:44px}
-.r-card .place .n{font-size:22px;font-weight:700;letter-spacing:-.8px;line-height:1}
-.r-card .place .of{font-size:10px;color:var(--mut);margin-top:2px;white-space:nowrap}
-.r-card .body{min-width:0;flex:1}
+.r-card{background:var(--card2);border-radius:12px;padding:10px 11px 9px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .r-card .who{display:flex;align-items:center;gap:6px;font-weight:650;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-ranks{display:grid;grid-template-columns:1.2fr .8fr;gap:6px 10px;align-items:end}
+.r-rank .n{font-size:20px;font-weight:700;letter-spacing:-.8px;line-height:1;white-space:nowrap}
+.r-rank.nbr .n{font-size:24px;letter-spacing:-1px}
+.r-rank .k{font-size:10px;color:var(--mut);margin-top:3px;line-height:1.25}
+@media(max-width:420px){
+  .r-rank.nbr .n{font-size:28px}
+  .r-rank .n{font-size:22px}
+}
 .grade{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;font-size:11px;font-weight:700;flex:0 0 auto}
 .grade.A{background:rgba(76,175,80,.2);color:var(--good)}
 .grade.B{background:rgba(139,195,74,.2);color:var(--ok)}
 .grade.C{background:rgba(251,192,45,.2);color:var(--warn)}
 .grade.D{background:rgba(255,152,0,.2);color:var(--hot)}
 .grade.F,.grade.E{background:rgba(244,67,54,.2);color:var(--bad)}
-.r-card .meta{margin-top:3px;font-size:11.5px;color:var(--mut);line-height:1.4}
+.r-card .meta{font-size:11.5px;color:var(--mut);line-height:1.4}
 .r-card .meta b{color:var(--txt);font-weight:650}
 .board.unavail{color:var(--mut);font-size:13px}
 footer{margin-top:22px;color:var(--mut);font-size:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
@@ -132,7 +136,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 </header>
 <section class="board" id="board"><div class="board-unavail">Loading CoreScope ranking…</div></section>
 <section class="grid" id="cards"><div class="card">Loading…</div></section>
-<p class="note">The ranking strip uses CoreScope’s own usefulness grade and score, and rank among CoreScope repeaters by usefulness and by relays in the last 24 hours. Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry (battery, temperature, uptime, noise, last SNR/RSSI, TX/RX airtime) comes from the hourly repeater login when it is available.</p>
+<p class="note">The ranking strip uses CoreScope’s own usefulness grade and score, and rank among CoreScope repeaters by usefulness and by relays in the last 24 hours. Neighbour rank (all-time) is CoreScope’s rank by neighbour count among all nodes with edges. Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry (battery, temperature, uptime, noise, last SNR/RSSI, TX/RX airtime) comes from the hourly repeater login when it is available.</p>
 
 <section class="block">
   <h2>Radio telemetry</h2>
@@ -303,6 +307,13 @@ function rankLine(rank, total){
   const of = (total != null && Number.isFinite(Number(total))) ? Math.round(Number(total)).toLocaleString("en-US") : "—";
   return "#" + r.toLocaleString("en-US") + " of " + of;
 }
+function nbrRankLine(r){
+  if(r.neighbor_rank == null || !Number.isFinite(Number(r.neighbor_rank))) return "—";
+  const rank = Math.round(Number(r.neighbor_rank)).toLocaleString("en-US");
+  const of = (r.neighbor_ranked_of != null && Number.isFinite(Number(r.neighbor_ranked_of)))
+    ? Math.round(Number(r.neighbor_ranked_of)).toLocaleString("en-US") : "—";
+  return "#" + rank + " / " + of;
+}
 function reachLine(r){
   const heard = num(r.heard_nodes);
   const two = num(r.two_way);
@@ -316,7 +327,7 @@ function renderBoard(){
   if(!el) return;
   const d = DATA || {};
   const list = (d.order || ORDER).map(s => (d.repeaters||[]).find(r => r.slug === s)).filter(Boolean);
-  const any = list.some(r => r.usefulness_rank != null || r.usefulness_grade || r.usefulness_score != null || r.relay_rank != null);
+  const any = list.some(r => r.usefulness_rank != null || r.usefulness_grade || r.usefulness_score != null || r.relay_rank != null || r.neighbor_rank != null);
   if(!any){
     el.className = "board unavail";
     el.innerHTML = "CoreScope ranking unavailable.";
@@ -335,20 +346,21 @@ function renderBoard(){
     const grade = g ? `<span class="grade ${esc(g)}">${esc(g)}</span>` : "";
     const place = r.usefulness_rank != null ? "#" + Number(r.usefulness_rank).toLocaleString("en-US") : "—";
     return `<article class="r-card">
-      <div class="place"><div class="n">${place}</div><div class="of">of ${esc(String(n))}</div></div>
-      <div class="body">
-        <div class="who">${grade}<span>${esc(r.short || r.name || r.slug)}</span></div>
-        <div class="meta">${reachLine(r)}</div>
-        <div class="meta"><b>${pct01(r.usefulness_score, 0)}</b> usefulness
-          · ${rankLine(r.relay_rank, r.ranked_of || total)} relays/24h</div>
-        <div class="meta">Traffic share ${pct01(r.traffic_share_score, 1)} · Bridge ${pct01(r.bridge_score, 1)}</div>
+      <div class="who">${grade}<span>${esc(r.short || r.name || r.slug)}</span></div>
+      <div class="r-ranks">
+        <div class="r-rank nbr"><div class="n">${nbrRankLine(r)}</div><div class="k">Neighbour rank (all-time)</div></div>
+        <div class="r-rank"><div class="n">${place}</div><div class="k">of ${esc(String(n))} usefulness</div></div>
       </div>
+      <div class="meta">${reachLine(r)}</div>
+      <div class="meta"><b>${pct01(r.usefulness_score, 0)}</b> usefulness
+        · ${rankLine(r.relay_rank, r.ranked_of || total)} relays/24h</div>
+      <div class="meta">Traffic share ${pct01(r.traffic_share_score, 1)} · Bridge ${pct01(r.bridge_score, 1)}</div>
     </article>`;
   }).join("");
   el.className = "board";
   el.innerHTML = `<div class="board-head">
       <h2>CoreScope ranking</h2>
-      <p>Among ${esc(String(n))} CoreScope repeaters. Grade and usefulness score are CoreScope’s own. Relay rank is by CoreScope relays in the last 24 hours.</p>
+      <p>Among ${esc(String(n))} CoreScope repeaters. Neighbour rank is CoreScope’s all-time rank by neighbour count among nodes with edges. Grade and usefulness score are CoreScope’s own. Relay rank is by CoreScope relays in the last 24 hours.</p>
     </div><div class="board-grid">${cards}</div>`;
 }
 function render(){

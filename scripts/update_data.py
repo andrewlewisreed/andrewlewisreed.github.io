@@ -6,6 +6,8 @@ Metrics (no invented scores, no coordinates or neighbor names):
   heard_nodes: unique 7-day reach links with we_hear > 0
   two_way: bidir reach links with max(we_hear, they_hear) >= 20
   max_link_mi: max CoreScope distance_km among those links, in miles (omitted if none)
+  neighbor_degree / neighbor_rank / neighbor_ranked_of: all-time neighbour
+  graph from reach importance (degree_rank among nodes_with_edges)
   observers: /health relayObserverCount (fallback: observer list length)
   avail_pct: /analytics?days=7 computedStats.availabilityPct
   snr_median / snr_top / snr_hist: neighbor avg_snr values only
@@ -103,7 +105,23 @@ def reach_metrics(reach):
         observers = int(observers) if observers is not None else None
     except (TypeError, ValueError):
         observers = None
-    return {"heard_nodes": heard, "two_way": two_way, "max_link_mi": farthest, "reach_observers": observers}
+    imp = (reach or {}).get("importance") or {}
+
+    def as_int(v):
+        try:
+            return int(v) if v is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    return {
+        "heard_nodes": heard,
+        "two_way": two_way,
+        "max_link_mi": farthest,
+        "reach_observers": observers,
+        "neighbor_degree": as_int(imp.get("neighbor_degree")),
+        "neighbor_rank": as_int(imp.get("degree_rank")),
+        "neighbor_ranked_of": as_int(imp.get("nodes_with_edges")),
+    }
 
 
 def snr_metrics(neigh):
@@ -375,7 +393,8 @@ def main():
             e["reach_stale"] = False
         else:
             errors.append(f"{short} reach: {reach_e}")
-            for k in ("heard_nodes", "two_way", "max_link_mi"):
+            for k in ("heard_nodes", "two_way", "max_link_mi",
+                      "neighbor_degree", "neighbor_rank", "neighbor_ranked_of"):
                 e[k] = prev.get(k)
             e["reach_stale"] = True
 
@@ -429,6 +448,7 @@ def main():
         "repeaters_total": rank_total,
         "usefulness": "CoreScope usefulness_score (grade is CoreScope usefulness_grade)",
         "relays": "CoreScope relay_count_24h among role=repeater",
+        "neighbors": "CoreScope all-time neighbor_degree rank among nodes with edges (importance.degree_rank / nodes_with_edges from /reach)",
     }
     payload = {
         "repeaters": reps,
