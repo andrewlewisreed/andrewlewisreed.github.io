@@ -1,0 +1,111 @@
+{
+ "updated_at": "2026-11-19T09:07:47Z",
+ "repeaters": [
+  {
+   "name": "Mr. DuPont",
+   "short": "DuPont",
+   "slug": "dupont",
+   "pubkey": "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
+   "corescope_url": "https://corescope.wcmesh.com/#/nodes/2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
+   "last_heard": "2026-11-19T09:06:40Z",
+   "online": true,
+   "usefulness_score": 0.301,
+   "usefulness_grade": "C",
+   "relays_24h": 4289,
+   "relays_1h": 68,
+   "status_stale": false,
+   "reed": {
+    "total": 71,
+    "grade": "B",
+    "two_way": 29.4,
+    "quality": 41.7,
+    "links": 17.7,
+    "median_snr": 5.5,
+    "snr_links": 36
+   },
+   "reed_stale": false
+  },
+  {
+   "name": "Saigon Westminster",
+   "short": "Saigon",
+   "slug": "saigon",
+   "pubkey": "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
+   "corescope_url": "https://corescope.wcmesh.com/#/nodes/01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
+   "last_heard": "2026-11-19T09:05:33Z",
+   "online": true,
+   "usefulness_score": 0.288,
+   "usefulness_grade": "D",
+   "relays_24h": 2686,
+   "relays_1h": 43,
+   "status_stale": false,
+   "reed": {
+    "total": 79,
+    "grade": "B",
+    "two_way": 39.4,
+    "quality": 39.5,
+    "links": 23.6,
+    "median_snr": 4.8,
+    "snr_links": 20
+   },
+   "reed_stale": false
+  },
+  {
+   "name": "Funky Pair",
+   "short": "Funky",
+   "slug": "funky",
+   "pubkey": "2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0",
+   "corescope_url": "https://corescope.wcmesh.com/#/nodes/2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0",
+   "last_heard": "2026-11-19T08:55:57Z",
+   "online": true,
+   "usefulness_score": 0.198,
+   "usefulness_grade": "D",
+   "relays_24h": 496,
+   "relays_1h": 4,
+   "status_stale": false,
+   "reed": {
+    "total": 46,
+    "grade": "D",
+    "two_way": 10.2,
+    "quality": 36.1,
+    "links": 6.1,
+    "median_snr": 3.8,
+    "snr_links": 9
+   },
+   "reed_stale": false
+  },
+  {
+   "name": "Wardcamp",
+   "short": "Wardcamp",
+   "slug": "wardcamp",
+   "pubkey": "f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571",
+   "corescope_url": "https://corescope.wcmesh.com/#/nodes/f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571",
+   "last_heard": "2026-11-19T08:27:15Z",
+   "online": true,
+   "usefulness_score": 0.137,
+   "usefulness_grade": "F",
+   "relays_24h": 793,
+   "relays_1h": 5,
+   "status_stale": false,
+   "reed": {
+    "total": 5,
+    "grade": "F",
+    "two_way": 4.5,
+    "quality": 0.0,
+    "links": 2.7,
+    "median_snr": -10.0,
+    "snr_links": 2
+   },
+   "reed_stale": false
+  }
+ ],
+ "reed_order": [
+  "saigon",
+  "dupont",
+  "funky",
+  "wardcamp"
+ ],
+ "summary": "REED score: Saigon 79B, DuPont 71B, Funky 46D, Wardcamp 5F",
+ "errors": [],
+ "offline_after_hours": 24,
+ "source": "https://corescope.wcmesh.com"
+}

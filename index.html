@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MeshCore Repeaters · REED</title>
+<meta name="description" content="Live status and REED scoring overview for the REED MeshCore repeaters.">
+<meta name="theme-color" content="#0f1419">
+<style>
+:root{--bg:#0f1419;--card:#18202a;--card2:#1f2935;--line:#2a3644;--txt:#e6edf3;--mut:#8b98a8;
+--A:#22c55e;--B:#84cc16;--C:#eab308;--D:#f97316;--F:#ef4444;--on:#22c55e;--off:#ef4444;--acc:#38bdf8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+header h1{margin:0;font-size:26px;letter-spacing:.2px}
+header p{margin:2px 0 18px;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media(max-width:620px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.rep .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rep h2{margin:0;font-size:18px}
+.pill{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pill.on{background:rgba(34,197,94,.15);color:var(--on);border:1px solid rgba(34,197,94,.4)}
+.pill.off{background:rgba(239,68,68,.15);color:var(--off);border:1px solid rgba(239,68,68,.4)}
+.pill.unk{background:#263241;color:var(--mut);border:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:var(--card2);border-radius:10px;padding:9px 10px}
+.stat .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+.stat .v{font-size:18px;font-weight:700;margin-top:2px}
+.g{font-weight:800}
+.gA{color:var(--A)}.gB{color:var(--B)}.gC{color:var(--C)}.gD{color:var(--D)}.gF{color:var(--F)}
+.reed{margin-top:16px}
+.reed h2{margin:0 0 4px;font-size:20px}
+.reed .sub{color:var(--mut);margin:0 0 12px;font-size:13px}
+.row{display:grid;grid-template-columns:120px 1fr 88px;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .nm{font-weight:600}
+.row .nm small{display:block;color:var(--mut);font-weight:400;font-size:12px}
+.bar{height:12px;background:var(--card2);border-radius:999px;overflow:hidden;position:relative}
+.bar>span{display:block;height:100%;border-radius:999px;transition:width .6s}
+.big{font-size:28px;font-weight:800;text-align:right;line-height:1}
+.big small{font-size:16px;margin-left:2px}
+@media(max-width:480px){.row{grid-template-columns:86px 1fr 70px}.big{font-size:22px}}
+.explain{margin-top:14px;color:var(--mut);font-size:13px}
+.explain b{color:var(--txt)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.legend span{font-size:12px}
+footer{margin-top:18px;color:var(--mut);font-size:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.warn{color:var(--D);font-size:12px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>MeshCore Repeaters</h1>
+<p>Live status and REED scoring overview</p>
+</header>
+
+<section class="grid" id="cards"><div class="card">Loading…</div></section>
+
+<section class="card reed">
+<h2>REED Score</h2>
+<p class="sub">Two-way links + link quality, from CoreScope's last 7 days</p>
+<div id="reed"></div>
+<div class="explain">
+<p><b>How it's scored (0–100):</b> <b>Two-way links (0–50)</b> counts neighbors that hear the repeater <i>and</i> are heard back (each link weighted by how balanced it is; 30 balanced links = full marks). <b>Link quality (0–50)</b> is the median signal-to-noise of its 5 best neighbors (−7 dB = 0, +8 dB = full marks).</p>
+<div class="legend"><span class="gA">A ≥ 85</span><span class="gB">B ≥ 70</span><span class="gC">C ≥ 55</span><span class="gD">D ≥ 40</span><span class="gF">F &lt; 40</span></div>
+<p>Status cards: <b>Online</b> means CoreScope heard the repeater in the last 24 h. Usefulness is CoreScope's own 0–1 score.</p>
+</div>
+</section>
+
+<footer>
+<span id="updated">Updated —</span>
+<span>Data: <a href="https://corescope.wcmesh.com/" rel="noopener">CoreScope</a> · read-only</span>
+</footer>
+<div class="warn" id="warn"></div>
+</div>
+<script>
+const G = g => (g && "ABCDF".includes(g)) ? g : "F";
+const COL = {A:"var(--A)",B:"var(--B)",C:"var(--C)",D:"var(--D)",F:"var(--F)"};
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function ago(iso){
+  if(!iso) return "—";
+  const m = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
+  if(m < 60) return m + " min ago";
+  const h = Math.round(m / 60); if(h < 48) return h + " h ago";
+  return Math.round(h / 24) + " d ago";
+}
+const pt = iso => new Date(iso).toLocaleString("en-US",{timeZone:"America/Los_Angeles",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) + " PT";
+let DATA = null;
+function render(){
+  const d = DATA, offH = d.offline_after_hours || 24;
+  document.getElementById("cards").innerHTML = d.repeaters.map(r => {
+    const t = r.last_heard ? Date.parse(r.last_heard) : null;
+    const on = t != null && (Date.now() - t) < offH * 3600e3;
+    const pill = t == null ? '<span class="pill unk">Unknown</span>' : on ? '<span class="pill on">● Online</span>' : '<span class="pill off">● Offline</span>';
+    const us = r.usefulness_score != null ? Number(r.usefulness_score).toFixed(3) : "—";
+    const ug = r.usefulness_grade ? ` <span class="g g${G(r.usefulness_grade)}">${esc(r.usefulness_grade)}</span>` : "";
+    const rel = r.relays_24h != null ? Number(r.relays_24h).toLocaleString("en-US") : "—";
+    return `<div class="card rep"><div class="top"><h2><a href="${esc(r.corescope_url)}" rel="noopener" style="color:inherit">${esc(r.name)}</a></h2>${pill}</div>
+      <div class="stats"><div class="stat"><div class="k">Usefulness</div><div class="v">${us}${ug}</div></div>
+      <div class="stat"><div class="k">Relays 24h</div><div class="v">${rel}</div></div>
+      <div class="stat"><div class="k">Last heard</div><div class="v" style="font-size:15px">${ago(r.last_heard)}</div></div></div></div>`;
+  }).join("");
+  const scored = d.repeaters.filter(r => r.reed).sort((a,b) => b.reed.total - a.reed.total || a.short.localeCompare(b.short));
+  document.getElementById("reed").innerHTML = scored.map(r => {
+    const s = r.reed, g = G(s.grade), w = Math.max(2, Math.min(100, s.total));
+    return `<div class="row"><div class="nm">${esc(r.short)}<small>2-way ${s.two_way} · SNR ${s.quality}</small></div>
+      <div class="bar" title="${s.total}/100"><span style="width:${w}%;background:${COL[g]}"></span></div>
+      <div class="big g${g}">${s.total}<small>${g}</small></div></div>`;
+  }).join("") || "<p>No scores yet.</p>";
+  document.getElementById("updated").textContent = "Updated " + (d.updated_at ? pt(d.updated_at) : "—");
+  document.getElementById("warn").textContent = (d.errors && d.errors.length) ? "Some CoreScope lookups failed on the last update; showing the previous values for those." : "";
+}
+async function load(){
+  try{
+    const r = await fetch("data.json?t=" + Date.now(), {cache:"no-store"});
+    DATA = await r.json(); render();
+  }catch(e){ document.getElementById("warn").textContent = "Couldn't load data.json."; }
+}
+load(); setInterval(load, 5 * 60e3); setInterval(() => DATA && render(), 60e3);
+</script>
+</body>
+</html>
