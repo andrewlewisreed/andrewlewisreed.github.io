@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """Fetch public CoreScope data for the REED mesh repeaters and write data.json.
 
-REED score matches the meshcore-bot's local/reed_score.py (defaults):
-  Two-way (0-50): bal = sum over reach links with bidir and max(we,they) >= 20 of
-                  min(we,they)/max(we,they);  two = min(50, bal/30*50)
-  Quality (0-50): avg_snr of neighbors (avg_snr not null, count >= 20), best 5,
-                  padded with -10 dB to 5 values; med = median;
-                  q = clamp((med + 7)/15*50, 0, 50)
-  Total = round(two + q); grade A>=85 B>=70 C>=55 D>=40 else F.
-Reach (from the same /reach payload, no extra requests): unique nodes heard
-  in the last 7 days (links with we_hear > 0); two-way neighbor count (bidir
-  and max(we_hear, they_hear) >= 20, same rule as the score); farthest link
-  in miles from CoreScope's distance_km when present. Coordinates, node names,
-  and locations are never written.
-Only public CoreScope data is used. No locations are written.
-Stdlib only (no pip install needed).
+Metrics (no REED score, no grades, no coordinates or neighbor names):
+  relays_24h / relays_1h, last_heard, online (24h window)
+  heard_nodes: unique 7-day reach links with we_hear > 0
+  two_way: bidir reach links with max(we_hear, they_hear) >= 20
+  max_link_mi: max CoreScope distance_km among those links, in miles (omitted if none)
+  observers: /health relayObserverCount (fallback: observer list length)
+  avail_pct: /analytics?days=7 computedStats.availabilityPct
+  snr_median / snr_top / snr_hist: neighbor avg_snr values only
+  relays_spark: recent relays_24h samples accumulated in data/relays_history.json
+
+Only public CoreScope data is used. Coordinates, neighbor names, and locations
+are never written. Stdlib only. Max 2 parallel requests with 429/503 backoff.
 """
+from __future__ import annotations
+
 import json
 import os
 import statistics
@@ -24,21 +24,25 @@ import time
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 BASE = "https://corescope.wcmesh.com"
 USER_AGENT = "reed-mesh-status/1.0 (+https://andrewlewisreed.github.io)"
 REPEATERS = [
-    # (display name, short name, slug, public key)
     ("Mr. DuPont", "DuPont", "dupont", "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0"),
     ("Saigon Westminster", "Saigon", "saigon", "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1"),
     ("Funky Pair", "Funky", "funky", "2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0"),
     ("Wardcamp", "Wardcamp", "wardcamp", "f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571"),
 ]
-S = {"min_pkts": 20, "target_links": 30.0, "snr_floor": -7.0, "snr_full": 8.0,
-     "top_n": 5, "pad_snr": -10.0, "grades": (("A", 85), ("B", 70), ("C", 55), ("D", 40))}
+MIN_PKTS = 20
 OFFLINE_AFTER_H = 24
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data.json")
+KM_TO_MI = 0.621371
+SNR_BINS = (-20, -10, -5, 0, 5, 10, 20)
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+OUT = os.path.join(ROOT, "data.json")
+HISTORY = os.path.join(ROOT, "data", "relays_history.json")
+HISTORY_DAYS = 14
+MAX_SPARK = 48  # ~24 hours of :07/:37 samples, or more if kept longer; we cap display at 48
 
 
 def get_json(url, timeout=40):
@@ -60,73 +64,6 @@ def get_json(url, timeout=40):
     raise RuntimeError(f"HTTP {status}")
 
 
-def grade(total):
-    for g, cut in S["grades"]:
-        if total >= cut:
-            return g
-    return "F"
-
-
-def reed_score(reach, neigh):
-    bal = 0.0
-    for ln in (reach or {}).get("links") or []:
-        try:
-            we, they = float(ln.get("we_hear") or 0), float(ln.get("they_hear") or 0)
-        except (TypeError, ValueError):
-            continue
-        hi = max(we, they)
-        if ln.get("bidir") and hi >= S["min_pkts"]:
-            bal += min(we, they) / hi
-    two = min(50.0, bal / S["target_links"] * 50.0)
-    snrs = []
-    for n in (neigh or {}).get("neighbors") or []:
-        v, c = n.get("avg_snr"), n.get("count") or 0
-        if v is None:
-            continue
-        try:
-            if float(c) >= S["min_pkts"]:
-                snrs.append(float(v))
-        except (TypeError, ValueError):
-            continue
-    snrs.sort(reverse=True)
-    top = snrs[: S["top_n"]]
-    top += [S["pad_snr"]] * (S["top_n"] - len(top))
-    med = statistics.median(top) if top else S["pad_snr"]
-    span = (S["snr_full"] - S["snr_floor"]) or 1.0
-    q = max(0.0, min(50.0, (med - S["snr_floor"]) / span * 50.0))
-    total = int(round(two + q))
-    return {"total": total, "grade": grade(total), "two_way": round(two, 1), "quality": round(q, 1),
-            "links": round(bal, 1), "median_snr": round(med, 1), "snr_links": len(snrs)}
-
-
-KM_TO_MI = 0.621371
-
-
-def reach_info(reach):
-    """Summarize 7-day RF reach. Never returns coordinates, names, or keys."""
-    links = (reach or {}).get("links") or []
-    nodes = 0
-    neighbors = 0
-    dists = []
-    for ln in links:
-        try:
-            we, they = float(ln.get("we_hear") or 0), float(ln.get("they_hear") or 0)
-        except (TypeError, ValueError):
-            we, they = 0.0, 0.0
-        if we > 0:
-            nodes += 1
-        if ln.get("bidir") and max(we, they) >= S["min_pkts"]:
-            neighbors += 1
-        dk = ln.get("distance_km")
-        if dk is not None:
-            try:
-                dists.append(float(dk))
-            except (TypeError, ValueError):
-                pass
-    farthest = round(max(dists) * KM_TO_MI, 1) if dists else None
-    return {"nodes": nodes, "neighbors": neighbors, "max_link_mi": farthest}
-
-
 def parse_ts(s):
     if not s:
         return None
@@ -136,12 +73,139 @@ def parse_ts(s):
         return None
 
 
+def reach_metrics(reach):
+    links = (reach or {}).get("links") or []
+    heard = 0
+    two_way = 0
+    dists = []
+    for ln in links:
+        try:
+            we, they = float(ln.get("we_hear") or 0), float(ln.get("they_hear") or 0)
+        except (TypeError, ValueError):
+            we, they = 0.0, 0.0
+        if we > 0:
+            heard += 1
+        if ln.get("bidir") and max(we, they) >= MIN_PKTS:
+            two_way += 1
+        dk = ln.get("distance_km")
+        if dk is not None:
+            try:
+                dists.append(float(dk))
+            except (TypeError, ValueError):
+                pass
+    farthest = round(max(dists) * KM_TO_MI, 1) if dists else None
+    observers = (reach or {}).get("importance", {}).get("direct_observers")
+    try:
+        observers = int(observers) if observers is not None else None
+    except (TypeError, ValueError):
+        observers = None
+    return {"heard_nodes": heard, "two_way": two_way, "max_link_mi": farthest, "reach_observers": observers}
+
+
+def snr_metrics(neigh):
+    vals = []
+    for n in (neigh or {}).get("neighbors") or []:
+        v = n.get("avg_snr")
+        if v is None:
+            continue
+        try:
+            vals.append(float(v))
+        except (TypeError, ValueError):
+            continue
+    if not vals:
+        return {"snr_median": None, "snr_top": None, "snr_count": 0, "snr_hist": [0] * (len(SNR_BINS) - 1)}
+    hist = [0] * (len(SNR_BINS) - 1)
+    for v in vals:
+        placed = False
+        for i in range(len(SNR_BINS) - 1):
+            if v < SNR_BINS[i + 1] or i == len(SNR_BINS) - 2:
+                hist[i] += 1
+                placed = True
+                break
+        if not placed:
+            hist[-1] += 1
+    return {
+        "snr_median": round(statistics.median(vals), 1),
+        "snr_top": round(max(vals), 1),
+        "snr_count": len(vals),
+        "snr_hist": hist,
+    }
+
+
+def health_observers(health):
+    if not health:
+        return None
+    v = health.get("relayObserverCount")
+    if v is not None:
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            pass
+    obs = health.get("observers")
+    if isinstance(obs, list):
+        return len(obs)
+    return None
+
+
+def avail_pct(analytics):
+    cs = (analytics or {}).get("computedStats") or {}
+    v = cs.get("availabilityPct")
+    if v is None:
+        return None
+    try:
+        return round(float(v), 1)
+    except (TypeError, ValueError):
+        return None
+
+
+def load_json(path, default):
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:  # noqa: BLE001
+        return default
+
+
+def write_json(path, payload):
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(payload, fh, indent=1)
+        fh.write("\n")
+
+
+def update_history(history, slug, now, relays):
+    if relays is None:
+        return history.get(slug) or []
+    cutoff = (now - timedelta(days=HISTORY_DAYS)).isoformat().replace("+00:00", "Z")
+    rows = [r for r in (history.get(slug) or []) if r.get("t") and r["t"] >= cutoff]
+    last = rows[-1] if rows else None
+    stamp = now.isoformat(timespec="seconds").replace("+00:00", "Z")
+    if last and last.get("relays_24h") == relays:
+        # refresh timestamp on same value at most every 3 hours to keep a readable sparkline
+        last_t = parse_ts(last.get("t"))
+        if last_t and (now - last_t).total_seconds() < 3 * 3600:
+            return rows
+    rows.append({"t": stamp, "relays_24h": int(relays)})
+    return rows[-200:]
+
+
+def fmt_rly(n):
+    try:
+        n = int(n)
+    except (TypeError, ValueError):
+        return "—"
+    if n >= 1000:
+        s = f"{n / 1000:.1f}k"
+        return s.replace(".0k", "k")
+    return str(n)
+
+
 def main():
     now = datetime.now(timezone.utc)
     urls = []
     for _n, _s, _g, pk in REPEATERS:
         b = f"{BASE}/api/nodes/{pk}"
-        urls += [b, b + "/reach", b + "/neighbors"]
+        urls += [b, b + "/reach", b + "/neighbors", b + "/health", b + "/analytics?days=7"]
     results = {}
 
     def job(u):
@@ -156,10 +220,12 @@ def main():
 
     old = {}
     try:
-        with open(OUT, encoding="utf-8") as fh:
-            old = {r["slug"]: r for r in json.load(fh).get("repeaters", [])}
+        old = {r["slug"]: r for r in load_json(OUT, {}).get("repeaters", [])}
     except Exception:  # noqa: BLE001
-        pass
+        old = {}
+    history = load_json(HISTORY, {})
+    if not isinstance(history, dict):
+        history = {}
 
     reps, errors = [], []
     for name, short, slug, pk in REPEATERS:
@@ -167,7 +233,9 @@ def main():
         node_d, node_e = results[b]
         reach_d, reach_e = results[b + "/reach"]
         neigh_d, neigh_e = results[b + "/neighbors"]
-        prev = old.get(slug, {})
+        health_d, health_e = results[b + "/health"]
+        anal_d, anal_e = results[b + "/analytics?days=7"]
+        prev = old.get(slug, {}) or {}
         e = {"name": name, "short": short, "slug": slug, "pubkey": pk,
              "corescope_url": f"{BASE}/#/nodes/{pk}"}
         if node_d and isinstance(node_d.get("node"), dict):
@@ -176,59 +244,88 @@ def main():
             e.update({
                 "last_heard": lh.isoformat().replace("+00:00", "Z") if lh else None,
                 "online": bool(lh and (now - lh).total_seconds() < OFFLINE_AFTER_H * 3600),
-                "usefulness_score": round(float(n["usefulness_score"]), 3) if n.get("usefulness_score") is not None else None,
-                "usefulness_grade": n.get("usefulness_grade"),
                 "relays_24h": n.get("relay_count_24h"),
                 "relays_1h": n.get("relay_count_1h"),
                 "status_stale": False,
             })
         else:
             errors.append(f"{short} node: {node_e}")
-            for k in ("last_heard", "usefulness_score", "usefulness_grade", "relays_24h", "relays_1h"):
+            for k in ("last_heard", "relays_24h", "relays_1h"):
                 e[k] = prev.get(k)
             lh = parse_ts(e.get("last_heard"))
             e["online"] = bool(lh and (now - lh).total_seconds() < OFFLINE_AFTER_H * 3600)
             e["status_stale"] = True
-        if reach_d is not None and neigh_d is not None:
-            e["reed"] = reed_score(reach_d, neigh_d)
-            e["reed_stale"] = False
-        else:
-            errors.append(f"{short} score: {reach_e or neigh_e}")
-            e["reed"] = prev.get("reed")
-            e["reed_stale"] = True
+
         if reach_d is not None:
-            e["reach"] = reach_info(reach_d)
+            e.update(reach_metrics(reach_d))
             e["reach_stale"] = False
         else:
-            e["reach"] = prev.get("reach")
+            errors.append(f"{short} reach: {reach_e}")
+            for k in ("heard_nodes", "two_way", "max_link_mi"):
+                e[k] = prev.get(k)
             e["reach_stale"] = True
+
+        if neigh_d is not None:
+            e.update(snr_metrics(neigh_d))
+            e["snr_stale"] = False
+        else:
+            errors.append(f"{short} neighbors: {neigh_e}")
+            for k in ("snr_median", "snr_top", "snr_count", "snr_hist"):
+                e[k] = prev.get(k)
+            e["snr_stale"] = True
+
+        obs = health_observers(health_d)
+        if obs is not None:
+            e["observers"] = obs
+            e["observers_stale"] = False
+        else:
+            if health_e:
+                errors.append(f"{short} health: {health_e}")
+            # fall back to reach direct_observers, then previous
+            e["observers"] = e.pop("reach_observers", None)
+            if e["observers"] is None:
+                e["observers"] = prev.get("observers")
+            e["observers_stale"] = e["observers"] is not None and health_d is None
+        e.pop("reach_observers", None)
+
+        av = avail_pct(anal_d)
+        if av is not None:
+            e["avail_pct"] = av
+            e["avail_stale"] = False
+        else:
+            if anal_e:
+                errors.append(f"{short} analytics: {anal_e}")
+            e["avail_pct"] = prev.get("avail_pct")
+            e["avail_stale"] = True
+
+        history[slug] = update_history(history, slug, now, e.get("relays_24h"))
+        e["relays_spark"] = [int(r["relays_24h"]) for r in history[slug][-MAX_SPARK:] if r.get("relays_24h") is not None]
         reps.append(e)
 
-    scored = sorted([r for r in reps if r.get("reed")], key=lambda r: (-r["reed"]["total"], r["short"].lower()))
+    write_json(HISTORY, history)
+    order = ["saigon", "dupont", "funky", "wardcamp"]
+    ordered = [next(r for r in reps if r["slug"] == s) for s in order if any(r["slug"] == s for r in reps)]
+    summary = "REED mesh: " + ", ".join(
+        f"{r['short']} {fmt_rly(r.get('relays_24h'))} rly/24h" if i == 0 else f"{r['short']} {fmt_rly(r.get('relays_24h'))}"
+        for i, r in enumerate(ordered)
+    )
     payload = {
         "repeaters": reps,
-        "reed_order": [r["slug"] for r in scored],
-        "summary": "REED score: " + ", ".join(f"{r['short']} {r['reed']['total']}{r['reed']['grade']}" for r in scored),
+        "order": order,
+        "summary": summary,
         "errors": errors,
         "offline_after_hours": OFFLINE_AFTER_H,
+        "snr_bins": list(SNR_BINS),
         "source": BASE,
     }
-    # Only bump updated_at (and so commit) when the data itself changed.
-    old_full = {}
-    try:
-        with open(OUT, encoding="utf-8") as fh:
-            old_full = json.load(fh)
-    except Exception:  # noqa: BLE001
-        pass
+    old_full = load_json(OUT, {})
     same = {k: v for k, v in old_full.items() if k != "updated_at"} == payload
     payload["updated_at"] = old_full.get("updated_at") if same and old_full.get("updated_at") else now.isoformat(timespec="seconds").replace("+00:00", "Z")
     payload = {"updated_at": payload.pop("updated_at"), **payload}
-    if all(r.get("reed") is None and r.get("last_heard") is None for r in reps):
+    if all(r.get("last_heard") is None and r.get("relays_24h") is None for r in reps):
         print("All fetches failed; keeping old data.json", file=sys.stderr)
         return 1
-    with open(OUT, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump(payload, fh, indent=1)
-        fh.write("\n")
+    write_json(OUT, payload)
     print(payload["summary"])
     for err in errors:
         print("warn:", err, file=sys.stderr)

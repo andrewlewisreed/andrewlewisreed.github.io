@@ -3,86 +3,99 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MeshCore Repeaters · REED</title>
-<meta name="description" content="Live status and REED scoring overview for the REED MeshCore repeaters.">
-<meta name="theme-color" content="#0f1419">
+<title>REED Mesh · CoreScope</title>
+<meta name="description" content="Live CoreScope metrics for the REED MeshCore repeaters.">
+<meta name="theme-color" content="#111317">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f1419;--card:#18202a;--card2:#1f2935;--line:#2a3644;--txt:#e6edf3;--mut:#8b98a8;
---A:#22c55e;--B:#84cc16;--C:#eab308;--D:#f97316;--F:#ef4444;--on:#22c55e;--off:#ef4444;--acc:#38bdf8}
+:root{
+  --bg:#111317; --card:#1c1f24; --card2:#252a31; --line:#2c3038;
+  --txt:#e6edf3; --mut:#8b949e; --faint:#3a4048;
+  --good:#4caf50; --ok:#8bc34a; --warn:#fbc02d; --hot:#ff9800; --bad:#f44336;
+  --acc:#64b5f6; --track:#2e343c;
+  --font:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
-header h1{margin:0;font-size:26px;letter-spacing:.2px}
-header p{margin:2px 0 18px;color:var(--mut)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-@media(max-width:620px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
-.rep .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.rep h2{margin:0;font-size:18px}
-.pill{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
-.pill.on{background:rgba(34,197,94,.15);color:var(--on);border:1px solid rgba(34,197,94,.4)}
-.pill.off{background:rgba(239,68,68,.15);color:var(--off);border:1px solid rgba(239,68,68,.4)}
-.pill.unk{background:#263241;color:var(--mut);border:1px solid var(--line)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
-.stats4{grid-template-columns:repeat(4,1fr)}
-@media(max-width:620px){.stats4{grid-template-columns:repeat(2,1fr)}}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 48px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:22px}
+header h1{margin:0;font-size:26px;font-weight:650;letter-spacing:-.4px}
+header p{margin:4px 0 0;color:var(--mut);font-size:13.5px}
+header .updated{color:var(--mut);font-size:12.5px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px;display:flex;flex-direction:column;gap:14px;min-height:100%}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top h2{margin:0;font-size:18px;font-weight:650;letter-spacing:-.2px}
+.top h2 a{color:inherit;text-decoration:none}
+.top h2 a:hover{color:var(--acc)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:650;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.pill.on{background:rgba(76,175,80,.12);color:var(--good);border:1px solid rgba(76,175,80,.35)}
+.pill.on i{background:var(--good);box-shadow:0 0 0 3px rgba(76,175,80,.2)}
+.pill.off{background:rgba(244,67,54,.12);color:var(--bad);border:1px solid rgba(244,67,54,.35)}
+.pill.off i{background:var(--bad)}
+.pill.unk{background:var(--card2);color:var(--mut);border:1px solid var(--line)}
+.pill.unk i{background:var(--mut)}
+.hero{display:grid;grid-template-columns:1fr 140px;gap:14px;align-items:end}
+@media(max-width:520px){.hero{grid-template-columns:1fr}}
+.hero .k{font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.7px}
+.hero .n{font-size:44px;font-weight:700;letter-spacing:-1.2px;line-height:1;margin:2px 0}
+.hero .n small{font-size:15px;font-weight:600;color:var(--mut);margin-left:4px;letter-spacing:0}
+.delta{display:inline-block;margin-left:8px;font-size:13px;font-weight:650;vertical-align:middle;padding:2px 7px;border-radius:999px}
+.delta.up{color:var(--good);background:rgba(76,175,80,.12)}
+.delta.down{color:var(--bad);background:rgba(244,67,54,.12)}
+.delta.dim{color:var(--mut);background:var(--card2)}
+.spark{width:100%;height:44px;display:block}
+.spark path.fill{fill:rgba(76,175,80,.16)}
+.spark path.line{fill:none;stroke:var(--good);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.metrics{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.ringside{display:flex;align-items:center;gap:10px}
+.ring{width:86px;height:86px}
+.ring text{font-family:var(--font)}
+.ring .pct{font-size:15px;font-weight:700;fill:var(--txt)}
+.ring .lbl{font-size:7.5px;font-weight:600;fill:var(--mut);letter-spacing:.6px}
+.obs{display:flex;flex-direction:column;gap:2px}
+.obs .v{font-size:22px;font-weight:700;letter-spacing:-.4px}
+.obs .k{font-size:11px;color:var(--mut);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .stat{background:var(--card2);border-radius:10px;padding:9px 10px}
-.stat .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
-.stat .v{font-size:18px;font-weight:700;margin-top:2px}
-.g{font-weight:800}
-.gA{color:var(--A)}.gB{color:var(--B)}.gC{color:var(--C)}.gD{color:var(--D)}.gF{color:var(--F)}
-.reed{margin-top:16px}
-.reed h2{margin:0 0 4px;font-size:20px}
-.reed .sub{color:var(--mut);margin:0 0 12px;font-size:13px}
-.row{display:grid;grid-template-columns:120px 1fr 130px;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
-.row:first-of-type{border-top:0}
-.row .nm{font-weight:600}
-.row .nm small{display:block;color:var(--mut);font-weight:400;font-size:12px}
-.bar{height:12px;background:var(--card2);border-radius:999px;overflow:hidden;position:relative}
-.bar>span{display:block;height:100%;border-radius:999px;transition:width .6s}
-.big{font-size:28px;font-weight:800;text-align:right;line-height:1}
-.big small{font-size:16px;margin-left:2px}
-.delta{display:inline-block;margin-left:8px;font-size:13px;font-weight:700;vertical-align:middle}
-.delta.up{color:var(--on)}.delta.down{color:var(--off)}.delta.dim{color:var(--mut)}
-@media(max-width:480px){.row{grid-template-columns:86px 1fr 88px}.big{font-size:22px}.delta{display:block;margin:4px 0 0;font-size:12px}}
-.explain{margin-top:14px;color:var(--mut);font-size:13px}
-.explain b{color:var(--txt)}
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-.legend span{font-size:12px}
-footer{margin-top:18px;color:var(--mut);font-size:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+.stat .k{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.stat .v{font-size:17px;font-weight:650;margin-top:2px;letter-spacing:-.3px}
+.snr{display:grid;grid-template-columns:1fr 120px;gap:14px;align-items:end}
+@media(max-width:520px){.snr{grid-template-columns:1fr}}
+.snrbar{position:relative;height:10px;background:var(--track);border-radius:999px;overflow:hidden;margin-top:8px}
+.snrbar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#f44336,#fbc02d,#4caf50);transform-origin:left}
+.snr-meta{display:flex;justify-content:space-between;color:var(--mut);font-size:11px;margin-top:5px}
+.hist{display:flex;align-items:flex-end;gap:3px;height:46px}
+.hist i{flex:1;background:rgba(100,181,246,.55);border-radius:3px 3px 0 0;min-height:2px}
+.hist-lbl{display:flex;justify-content:space-between;font-size:9.5px;color:var(--mut);margin-top:3px}
+footer{margin-top:22px;color:var(--mut);font-size:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
 a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
-.warn{color:var(--D);font-size:12px;margin-top:8px}
+.warn{color:var(--hot);font-size:12px;margin-top:10px}
+.note{margin-top:10px;color:var(--mut);font-size:12.5px;max-width:820px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-<h1>MeshCore Repeaters</h1>
-<p>Live status and REED scoring overview</p>
+  <div>
+    <h1>REED Mesh</h1>
+    <p>Live CoreScope metrics for the REED MeshCore repeaters</p>
+  </div>
+  <div class="updated" id="updated">Updated —</div>
 </header>
-
 <section class="grid" id="cards"><div class="card">Loading…</div></section>
-
-<section class="card reed">
-<h2>REED Score</h2>
-<p class="sub">Two-way links + link quality, from CoreScope's last 7 days · weekly change vs Monday 8:05 AM PT baseline</p>
-<div id="reed"></div>
-<div class="explain">
-<p><b>How it's scored (0–100):</b> <b>Two-way links (0–50)</b> counts neighbors that hear the repeater <i>and</i> are heard back (each link weighted by how balanced it is; 30 balanced links = full marks). <b>Link quality (0–50)</b> is the median signal-to-noise of its 5 best neighbors (−7 dB = 0, +8 dB = full marks).</p>
-<div class="legend"><span class="gA">A ≥ 85</span><span class="gB">B ≥ 70</span><span class="gC">C ≥ 55</span><span class="gD">D ≥ 40</span><span class="gF">F &lt; 40</span></div>
-<p>Status cards: <b>Online</b> means CoreScope heard the repeater in the last 24 h. Usefulness is CoreScope's own 0–1 score. <b>Reach:</b> unique nodes heard in the last 7 days, two-way neighbors (same ≥20-packet bidir rule as the score), and farthest link in miles when CoreScope has a distance. <b>▲▼</b> is the change from the weekly baseline (refreshed the first update on or after Monday 8:05 AM PT).</p>
-</div>
-</section>
-
+<p class="note">Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime is 7-day availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline.</p>
 <footer>
-<span id="updated">Updated —</span>
-<span>Data: <a href="https://corescope.wcmesh.com/" rel="noopener">CoreScope</a> · read-only</span>
+  <span>Data: <a href="https://corescope.wcmesh.com/" rel="noopener">CoreScope</a> · read-only</span>
+  <span>No locations or neighbor names are published here.</span>
 </footer>
 <div class="warn" id="warn"></div>
 </div>
 <script>
-const G = g => (g && "ABCDF".includes(g)) ? g : "F";
-const COL = {A:"var(--A)",B:"var(--B)",C:"var(--C)",D:"var(--D)",F:"var(--F)"};
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function ago(iso){
   if(!iso) return "—";
@@ -92,50 +105,107 @@ function ago(iso){
   return Math.round(h / 24) + " d ago";
 }
 const pt = iso => new Date(iso).toLocaleString("en-US",{timeZone:"America/Los_Angeles",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) + " PT";
-let DATA = null;
-let BASELINE = null;
-function weekBadge(slug, total){
-  const scores = BASELINE && BASELINE.scores;
-  if(!scores || scores[slug] == null || total == null) return '<span class="delta dim">new</span>';
-  const d = Number(total) - Number(scores[slug]);
-  if(!Number.isFinite(d)) return '<span class="delta dim">new</span>';
-  if(d > 0) return '<span class="delta up">▲+' + d + "</span>";
-  if(d < 0) return '<span class="delta down">▼' + d + "</span>";
+function fmtRly(n){
+  if(n == null || !Number.isFinite(Number(n))) return "—";
+  n = Number(n);
+  if(n >= 1000){ const s = (n/1000).toFixed(1).replace(/\.0$/,""); return s + "k"; }
+  return Math.round(n).toLocaleString("en-US");
+}
+function num(n, d){ return (n == null || !Number.isFinite(Number(n))) ? "—" : Number(n).toLocaleString("en-US", d != null ? {maximumFractionDigits:d, minimumFractionDigits:d} : {maximumFractionDigits:0}); }
+function badge(cur, base){
+  if(base == null || cur == null || !Number.isFinite(Number(cur)) || !Number.isFinite(Number(base))) return '<span class="delta dim">new</span>';
+  const d = Number(cur) - Number(base);
+  if(d > 0) return '<span class="delta up">▲+' + Math.round(d).toLocaleString("en-US") + "</span>";
+  if(d < 0) return '<span class="delta down">▼' + Math.round(d).toLocaleString("en-US") + "</span>";
   return '<span class="delta dim">±0</span>';
 }
-function reachBits(r){
-  const rh = r.reach || {};
-  const nodes = rh.nodes != null ? Number(rh.nodes).toLocaleString("en-US") : "—";
-  const nbr = rh.neighbors != null ? Number(rh.neighbors).toLocaleString("en-US") : "—";
-  const mi = (rh.max_link_mi != null && Number.isFinite(Number(rh.max_link_mi))) ? Number(rh.max_link_mi).toFixed(1) + " mi" : "—";
-  return {nodes, nbr, mi};
+function spark(vals){
+  if(!vals || vals.length < 2) return '<svg class="spark" viewBox="0 0 140 44" aria-hidden="true"></svg>';
+  const w=140,h=44,p=2;
+  const min=Math.min(...vals), max=Math.max(...vals);
+  const span=Math.max(1, max-min);
+  const pts=vals.map((v,i)=>{
+    const x=p + i*(w-2*p)/Math.max(1,vals.length-1);
+    const y=h-p - ((v-min)/span)*(h-2*p);
+    return [x,y];
+  });
+  const line=pts.map((pt,i)=> (i?"L":"M")+pt[0].toFixed(1)+","+pt[1].toFixed(1)).join(" ");
+  const fill=line+" L"+pts[pts.length-1][0].toFixed(1)+","+(h)+" L"+pts[0][0].toFixed(1)+","+h+" Z";
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path class="fill" d="${fill}"/><path class="line" d="${line}"/></svg>`;
+}
+function ring(pct){
+  const r=30, cx=43, cy=40, C=2*Math.PI*r;
+  const ok = pct != null && Number.isFinite(Number(pct));
+  const v = ok ? Math.max(0, Math.min(100, Number(pct))) : 0;
+  const dash = (v/100)*C;
+  const col = !ok ? "var(--faint)" : v >= 80 ? "var(--good)" : v >= 50 ? "var(--warn)" : "var(--bad)";
+  const label = ok ? Math.round(v) + "%" : "—";
+  return `<svg class="ring" viewBox="0 0 86 86" aria-hidden="true">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--track)" stroke-width="8"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round"
+      stroke-dasharray="${dash.toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>
+    <text class="pct" x="${cx}" y="${cy+1}" text-anchor="middle" dominant-baseline="middle">${esc(label)}</text>
+    <text class="lbl" x="${cx}" y="78" text-anchor="middle">UPTIME 7D</text>
+  </svg>`;
+}
+function hist(counts, bins){
+  const arr = counts || [];
+  const max = Math.max(1, ...arr);
+  const bars = arr.map(c => `<i style="height:${Math.max(6, Math.round((c/max)*100))}%"></i>`).join("");
+  const lo = bins && bins.length ? bins[0] : -20;
+  const hi = bins && bins.length ? bins[bins.length-1] : 20;
+  return `<div><div class="hist">${bars}</div><div class="hist-lbl"><span>${lo} dB</span><span>SNR</span><span>${hi} dB</span></div></div>`;
+}
+function snrScale(v){
+  // map -10..+15 dB onto 8%..100% of the bar
+  if(v == null || !Number.isFinite(Number(v))) return 0;
+  return Math.max(8, Math.min(100, ((Number(v) + 10) / 25) * 100));
+}
+let DATA = null, BASELINE = null;
+function baseOf(slug, key){
+  const r = BASELINE && BASELINE.repeaters && BASELINE.repeaters[slug];
+  return r ? r[key] : null;
 }
 function render(){
-  const d = DATA, offH = d.offline_after_hours || 24;
-  document.getElementById("cards").innerHTML = d.repeaters.map(r => {
+  const d = DATA, offH = d.offline_after_hours || 24, bins = d.snr_bins || [-20,-10,-5,0,5,10,20];
+  const order = d.order || ["saigon","dupont","funky","wardcamp"];
+  const by = Object.fromEntries((d.repeaters||[]).map(r => [r.slug, r]));
+  const list = order.map(s => by[s]).filter(Boolean);
+  document.getElementById("cards").innerHTML = list.map(r => {
     const t = r.last_heard ? Date.parse(r.last_heard) : null;
     const on = t != null && (Date.now() - t) < offH * 3600e3;
-    const pill = t == null ? '<span class="pill unk">Unknown</span>' : on ? '<span class="pill on">● Online</span>' : '<span class="pill off">● Offline</span>';
-    const us = r.usefulness_score != null ? Number(r.usefulness_score).toFixed(3) : "—";
-    const ug = r.usefulness_grade ? ` <span class="g g${G(r.usefulness_grade)}">${esc(r.usefulness_grade)}</span>` : "";
-    const rel = r.relays_24h != null ? Number(r.relays_24h).toLocaleString("en-US") : "—";
-    return `<div class="card rep"><div class="top"><h2><a href="${esc(r.corescope_url)}" rel="noopener" style="color:inherit">${esc(r.name)}</a></h2>${pill}</div>
-      <div class="stats"><div class="stat"><div class="k">Usefulness</div><div class="v">${us}${ug}</div></div>
-      <div class="stat"><div class="k">Relays 24h</div><div class="v">${rel}</div></div>
-      <div class="stat"><div class="k">Last heard</div><div class="v" style="font-size:15px">${ago(r.last_heard)}</div></div></div>
-      ${r.reed || r.reach ? `<div class="stats stats4">${r.reed ? `<div class="stat"><div class="k">REED score</div><div class="v g g${G(r.reed.grade)}">${r.reed.total}<small>${esc(r.reed.grade)}</small>${weekBadge(r.slug, r.reed.total)}</div></div>` : `<div class="stat"><div class="k">REED score</div><div class="v">—</div></div>`}
-      <div class="stat"><div class="k">Heard 7d</div><div class="v">${reachBits(r).nodes}</div></div>
-      <div class="stat"><div class="k">Two-way</div><div class="v">${reachBits(r).nbr}</div></div>
-      <div class="stat"><div class="k">Farthest</div><div class="v" style="font-size:15px">${reachBits(r).mi}</div></div></div>` : ""}</div>`;
-  }).join("");
-  const scored = d.repeaters.filter(r => r.reed).sort((a,b) => b.reed.total - a.reed.total || a.short.localeCompare(b.short));
-  document.getElementById("reed").innerHTML = scored.map(r => {
-    const s = r.reed, g = G(s.grade), w = Math.max(2, Math.min(100, s.total));
-    const rb = reachBits(r);
-    return `<div class="row"><div class="nm">${esc(r.short)}<small>2-way ${s.two_way} · SNR ${s.quality}<br>heard ${rb.nodes} · two-way ${rb.nbr} · farthest ${rb.mi}</small></div>
-      <div class="bar" title="${s.total}/100"><span style="width:${w}%;background:${COL[g]}"></span></div>
-      <div class="big g${g}">${s.total}<small>${g}</small>${weekBadge(r.slug, s.total)}</div></div>`;
-  }).join("") || "<p>No scores yet.</p>";
+    const pill = t == null
+      ? '<span class="pill unk"><i></i>Unknown</span>'
+      : on ? `<span class="pill on"><i></i>Online · ${ago(r.last_heard)}</span>`
+           : `<span class="pill off"><i></i>Offline · ${ago(r.last_heard)}</span>`;
+    const mi = r.max_link_mi != null ? Number(r.max_link_mi).toFixed(1) + " mi" : "—";
+    return `<article class="card">
+      <div class="top"><h2><a href="${esc(r.corescope_url)}" rel="noopener">${esc(r.name)}</a></h2>${pill}</div>
+      <div class="hero">
+        <div>
+          <div class="k">Relays · last 24 hours</div>
+          <div class="n">${fmtRly(r.relays_24h)}<small>rly</small>${badge(r.relays_24h, baseOf(r.slug,"relays_24h"))}</div>
+        </div>
+        ${spark(r.relays_spark)}
+      </div>
+      <div class="metrics">
+        <div class="ringside">${ring(r.avail_pct)}<div class="obs"><div class="v">${num(r.observers)}</div><div class="k">Observers</div></div></div>
+        <div class="stats">
+          <div class="stat"><div class="k">Heard 7d</div><div class="v">${num(r.heard_nodes)}</div></div>
+          <div class="stat"><div class="k">Two-way</div><div class="v">${num(r.two_way)}${r.two_way != null ? badge(r.two_way, baseOf(r.slug,"two_way")) : ""}</div></div>
+          <div class="stat"><div class="k">Farthest</div><div class="v">${esc(mi)}</div></div>
+        </div>
+      </div>
+      <div class="snr">
+        <div>
+          <div class="k" style="text-transform:uppercase;letter-spacing:.6px;font-size:10.5px;font-weight:600;color:var(--mut)">Neighbor SNR</div>
+          <div class="snrbar" title="median ${num(r.snr_median,1)} dB"><span style="width:${snrScale(r.snr_median)}%"></span></div>
+          <div class="snr-meta"><span>median ${r.snr_median != null ? num(r.snr_median,1)+" dB" : "—"}</span><span>top ${r.snr_top != null ? num(r.snr_top,1)+" dB" : "—"} · ${num(r.snr_count)} links</span></div>
+        </div>
+        ${hist(r.snr_hist, bins)}
+      </div>
+    </article>`;
+  }).join("") || '<div class="card">No data yet.</div>';
   document.getElementById("updated").textContent = "Updated " + (d.updated_at ? pt(d.updated_at) : "—");
   document.getElementById("warn").textContent = (d.errors && d.errors.length) ? "Some CoreScope lookups failed on the last update; showing the previous values for those." : "";
 }
@@ -144,7 +214,7 @@ async function load(){
     const r = await fetch("data.json?t=" + Date.now(), {cache:"no-store"});
     DATA = await r.json();
     try{
-      const b = await fetch("data/reed_baseline.json?t=" + Date.now(), {cache:"no-store"});
+      const b = await fetch("data/week_baseline.json?t=" + Date.now(), {cache:"no-store"});
       BASELINE = b.ok ? await b.json() : null;
     }catch(e){ BASELINE = null; }
     render();
