@@ -136,6 +136,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 </header>
 <section class="board" id="board"><div class="board-unavail">Loading CoreScope ranking…</div></section>
 <section class="grid" id="cards"><div class="card">Loading…</div></section>
+<p class="note">Tuned per <a href="https://wiki.wcmesh.com/whitepapers/" rel="noopener">WCMesh whitepapers</a> to reduce packet collisions; reviewed weekly.</p>
 <p class="note">The ranking strip uses CoreScope’s own usefulness grade and score, and rank among CoreScope repeaters by usefulness and by relays in the last 24 hours. Neighbour rank (all-time) is CoreScope’s rank by neighbour count among all nodes with edges. Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry (battery, temperature, uptime, noise, last SNR/RSSI, TX/RX airtime) comes from the hourly repeater login when it is available.</p>
 
 <section class="block">
@@ -267,6 +268,36 @@ function telOf(slug){
   if(!TEL || !TEL.repeaters) return null;
   const list = Array.isArray(TEL.repeaters) ? TEL.repeaters : [];
   return list.find(r => r && r.slug === slug) || null;
+}
+function fmtTune(v, kind){
+  if(v == null || !Number.isFinite(Number(v))) return "—";
+  const n = Number(v);
+  if(kind === "rx" && Number.isInteger(n)) return String(n);
+  return n.toFixed(1);
+}
+function tuneOf(slug){
+  const list = TEL && TEL.tuning && TEL.tuning.repeaters;
+  if(!list) return null;
+  return (Array.isArray(list) ? list : []).find(r => r && r.slug === slug) || null;
+}
+function tuneBlock(slug){
+  const t = tuneOf(slug);
+  if(!t) return "";
+  if(t.managed === false){
+    return `<div>
+      <div class="tel-head"><div class="k">Tuning</div><div class="when">n/a</div></div>
+    </div>`;
+  }
+  const when = t.changed_at ? pt(t.changed_at) : "";
+  const whenHtml = when ? `changed ${esc(when)}` : "";
+  return `<div>
+    <div class="tel-head"><div class="k">Tuning</div><div class="when">${whenHtml}</div></div>
+    <div class="stats" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:8px">
+      <div class="stat"><div class="k">txdelay</div><div class="v">${fmtTune(t.txdelay, "tx")}</div></div>
+      <div class="stat"><div class="k">direct.txdelay</div><div class="v">${fmtTune(t.direct_txdelay, "tx")}</div></div>
+      <div class="stat"><div class="k">rxdelay</div><div class="v">${fmtTune(t.rxdelay, "rx")}</div></div>
+    </div>
+  </div>`;
 }
 function telBlock(slug){
   const t = telOf(slug);
@@ -400,6 +431,7 @@ function render(){
         <div class="stat"><div class="k">Links</div><div class="v">${num(r.snr_count)}</div></div>
       </div>
       ${telBlock(r.slug)}
+      ${tuneBlock(r.slug)}
       <div class="snr">
         <div>
           <div class="k" style="text-transform:uppercase;letter-spacing:.6px;font-size:10.5px;font-weight:600;color:var(--mut)">Neighbor SNR</div>

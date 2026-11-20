@@ -1,5 +1,5 @@
 {
-    "updated_at":  "2026-11-20T06:51:49-08:00",
+    "updated_at":  "2026-11-20T07:46:39-08:00",
     "source":  "reed-export/repeater_status.json",
     "repeaters":  [
                       {
@@ -8,48 +8,48 @@
                           "slug":  "saigon",
                           "ok":  true,
                           "stale":  false,
-                          "polled_at":  "2026-11-20T06:47:14-08:00",
-                          "ok_at":  "2026-11-20T06:47:14-08:00",
-                          "battery_v":  4.06,
-                          "temperature_c":  8.0,
-                          "uptime_s":  403868,
-                          "noise_floor":  -111,
-                          "last_snr":  12.25,
-                          "last_rssi":  -76,
-                          "tx_duty_pct":  2.54,
-                          "rx_duty_pct":  17.34
+                          "polled_at":  "2026-11-20T07:43:02-08:00",
+                          "ok_at":  "2026-11-20T07:43:02-08:00",
+                          "battery_v":  4.11,
+                          "temperature_c":  18.7,
+                          "uptime_s":  407215,
+                          "noise_floor":  -115,
+                          "last_snr":  12.0,
+                          "last_rssi":  -73,
+                          "tx_duty_pct":  3.13,
+                          "rx_duty_pct":  18.65
                       },
                       {
                           "name":  "Mr. DuPont",
                           "short":  "DuPont",
                           "slug":  "dupont",
-                          "ok":  false,
-                          "stale":  true,
-                          "polled_at":  "2026-11-20T06:50:06-08:00",
-                          "ok_at":  "2026-11-20T04:49:40-08:00",
-                          "battery_v":  3.81,
-                          "uptime_s":  135994,
-                          "noise_floor":  -100,
-                          "last_snr":  9.75,
-                          "last_rssi":  -78,
-                          "tx_duty_pct":  1.36,
-                          "rx_duty_pct":  5.62
+                          "ok":  true,
+                          "stale":  false,
+                          "polled_at":  "2026-11-20T07:44:41-08:00",
+                          "ok_at":  "2026-11-20T07:44:41-08:00",
+                          "battery_v":  4.17,
+                          "uptime_s":  146495,
+                          "noise_floor":  -120,
+                          "last_snr":  2.5,
+                          "last_rssi":  -89,
+                          "tx_duty_pct":  2.74,
+                          "rx_duty_pct":  10.27
                       },
                       {
                           "name":  "Funky Pair",
                           "short":  "Funky",
                           "slug":  "funky",
-                          "ok":  true,
-                          "stale":  false,
-                          "polled_at":  "2026-11-20T06:51:49-08:00",
-                          "ok_at":  "2026-11-20T06:51:49-08:00",
+                          "ok":  false,
+                          "stale":  true,
+                          "polled_at":  "2026-11-20T07:46:39-08:00",
+                          "ok_at":  "2026-11-20T07:34:03-08:00",
                           "battery_v":  4.03,
-                          "uptime_s":  223328,
-                          "noise_floor":  -113,
-                          "last_snr":  1.25,
-                          "last_rssi":  -114,
-                          "tx_duty_pct":  2.4,
-                          "rx_duty_pct":  14.5
+                          "uptime_s":  225863,
+                          "noise_floor":  -120,
+                          "last_snr":  3.5,
+                          "last_rssi":  -113,
+                          "tx_duty_pct":  2.68,
+                          "rx_duty_pct":  15.15
                       },
                       {
                           "name":  "Wardcamp",
@@ -57,8 +57,45 @@
                           "slug":  "wardcamp",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T06:51:49-08:00",
+                          "polled_at":  "2026-11-20T07:46:39-08:00",
                           "ok_at":  null
                       }
-                  ]
+                  ],
+    "tuning":  {
+                   "source":  "reed-export/tuning-changes.csv",
+                   "repeaters":  [
+                                     {
+                                         "name":  "Saigon",
+                                         "slug":  "saigon",
+                                         "managed":  true,
+                                         "txdelay":  2,
+                                         "direct_txdelay":  0.9,
+                                         "rxdelay":  8,
+                                         "changed_at":  "2026-11-20T01:40:00-08:00"
+                                     },
+                                     {
+                                         "name":  "Mr. DuPont",
+                                         "slug":  "dupont",
+                                         "managed":  true,
+                                         "txdelay":  2,
+                                         "direct_txdelay":  0.9,
+                                         "rxdelay":  8,
+                                         "changed_at":  "2026-11-20T07:40:00-08:00"
+                                     },
+                                     {
+                                         "name":  "Funky Pair",
+                                         "slug":  "funky",
+                                         "managed":  true,
+                                         "txdelay":  1.7,
+                                         "direct_txdelay":  0.8,
+                                         "rxdelay":  4,
+                                         "changed_at":  "2026-11-20T01:41:00-08:00"
+                                     },
+                                     {
+                                         "name":  "Wardcamp",
+                                         "slug":  "wardcamp",
+                                         "managed":  false
+                                     }
+                                 ]
+               }
 }
