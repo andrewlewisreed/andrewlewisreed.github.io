@@ -1,23 +1,22 @@
 {
-    "updated_at":  "2026-11-20T10:48:00-08:00",
+    "updated_at":  "2026-11-20T11:49:34-08:00",
     "source":  "reed-export/repeater_status.json",
     "repeaters":  [
                       {
                           "name":  "Saigon",
                           "short":  "Saigon",
                           "slug":  "saigon",
-                          "ok":  false,
-                          "stale":  true,
-                          "polled_at":  "2026-11-20T10:44:46-08:00",
-                          "ok_at":  "2026-11-20T09:44:28-08:00",
+                          "ok":  true,
+                          "stale":  false,
+                          "polled_at":  "2026-11-20T11:44:55-08:00",
+                          "ok_at":  "2026-11-20T11:44:55-08:00",
                           "battery_v":  4.11,
-                          "temperature_c":  29.7,
-                          "uptime_s":  414504,
-                          "noise_floor":  -115,
-                          "last_snr":  12.5,
-                          "last_rssi":  -71,
-                          "tx_duty_pct":  3.26,
-                          "rx_duty_pct":  20.27
+                          "uptime_s":  421706,
+                          "noise_floor":  -116,
+                          "last_snr":  12.25,
+                          "last_rssi":  -62,
+                          "tx_duty_pct":  2.99,
+                          "rx_duty_pct":  18.87
                       },
                       {
                           "name":  "Mr. DuPont",
@@ -25,16 +24,16 @@
                           "slug":  "dupont",
                           "ok":  true,
                           "stale":  false,
-                          "polled_at":  "2026-11-20T10:46:03-08:00",
-                          "ok_at":  "2026-11-20T10:46:03-08:00",
-                          "battery_v":  4.15,
-                          "temperature_c":  32.7,
-                          "uptime_s":  157401,
+                          "polled_at":  "2026-11-20T11:47:34-08:00",
+                          "ok_at":  "2026-11-20T11:47:34-08:00",
+                          "battery_v":  3.77,
+                          "temperature_c":  37.5,
+                          "uptime_s":  161093,
                           "noise_floor":  -120,
-                          "last_snr":  3.25,
-                          "last_rssi":  -84,
-                          "tx_duty_pct":  3.17,
-                          "rx_duty_pct":  10.92
+                          "last_snr":  -8.5,
+                          "last_rssi":  -89,
+                          "tx_duty_pct":  2.68,
+                          "rx_duty_pct":  9.89
                       },
                       {
                           "name":  "Funky Pair",
@@ -42,7 +41,7 @@
                           "slug":  "funky",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T10:48:00-08:00",
+                          "polled_at":  "2026-11-20T11:49:34-08:00",
                           "ok_at":  "2026-11-20T08:48:41-08:00",
                           "battery_v":  4.01,
                           "uptime_s":  230341,
@@ -58,7 +57,7 @@
                           "slug":  "wardcamp",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T10:48:00-08:00",
+                          "polled_at":  "2026-11-20T11:49:34-08:00",
                           "ok_at":  null
                       }
                   ],
