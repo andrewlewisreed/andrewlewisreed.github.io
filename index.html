@@ -84,8 +84,19 @@ table.tel tr:last-child td{border-bottom:0}
 table.tel td.mut{color:var(--mut)}
 .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media(max-width:800px){.charts{grid-template-columns:1fr}}
-.chart h3{margin:0 0 8px;font-size:14px;font-weight:650}
-.chart svg{width:100%;height:160px;display:block}
+.chart h3{margin:0 0 4px;font-size:14px;font-weight:650}
+.chart h3 small{color:var(--mut);font-weight:500;font-size:11.5px;margin-left:4px}
+.chart svg{width:100%;height:auto;aspect-ratio:520/200;display:block}
+.chart .latest{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mut);margin:0 0 6px}
+.chart .latest span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.chart .latest b{color:var(--txt);font-weight:650}
+.chart .latest i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chart .hint{font-size:11px;color:var(--mut);margin-top:4px}
+.cgroup{margin-top:22px}
+.cgroup>h3{margin:0 0 2px;font-size:15px;font-weight:650;letter-spacing:-.2px}
+.cgroup>p{margin:0 0 4px;color:var(--mut);font-size:12.5px}
+.cgroup .charts{margin-top:10px}
+.legend.sticky{position:sticky;top:0;z-index:2;background:var(--bg);padding:8px 0;margin-top:14px;border-bottom:1px solid var(--line)}
 .chart .empty{color:var(--mut);font-size:13px;padding:24px 8px}
 .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:12px;color:var(--mut)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
@@ -137,23 +148,14 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <section class="board" id="board"><div class="board-unavail">Loading CoreScope ranking…</div></section>
 <section class="grid" id="cards"><div class="card">Loading…</div></section>
 <p class="note">Tuned per <a href="https://wiki.wcmesh.com/whitepapers/" rel="noopener">WCMesh whitepapers</a> to reduce packet collisions; reviewed weekly.</p>
-<p class="note">The ranking strip uses CoreScope’s own usefulness grade and score, and rank among CoreScope repeaters by usefulness and by relays in the last 24 hours. Neighbour rank (all-time) is CoreScope’s rank by neighbour count among all nodes with edges. Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry (battery, temperature, uptime, noise, last SNR/RSSI, TX/RX airtime) comes from the hourly repeater login when it is available.</p>
+<p class="note">The ranking strip uses CoreScope’s own usefulness grade and score, and rank among CoreScope repeaters by usefulness and by relays in the last 24 hours. Neighbour rank (all-time) is CoreScope’s rank by neighbour count among all nodes with edges. Heard and two-way counts use CoreScope’s last 7 days (two-way = bidirectional links with at least 20 packets). Farthest link is shown only when CoreScope has a distance. Uptime 7d is CoreScope availability. Weekly ▲▼ is the change in relays/24h from the Monday 8:05 AM PT baseline. Radio telemetry comes from the hourly repeater login when it is available. Every numeric metric the repeaters report is charted below; packet counters are cumulative since boot, so they are charted as per-hour rates between polls, and an interval is skipped when a repeater rebooted (uptime or a counter went down). Collision ratios use the same intervals: receive error ratio = errors ÷ (received + errors), flood duplicate ratio = flood dups ÷ flood received.</p>
 
 <section class="block">
   <h2>Radio telemetry</h2>
   <p class="sub" id="tel-sub">Hourly status from the repeaters. Companion nodes are not published here.</p>
   <div class="panel table-wrap" id="tel-table"><div class="tel-un">Telemetry unavailable.</div></div>
-  <div class="charts">
-    <div class="panel chart">
-      <h3>Battery (V)</h3>
-      <div id="chart-batt"><div class="empty">No telemetry history yet.</div></div>
-    </div>
-    <div class="panel chart">
-      <h3>Noise floor (dBm)</h3>
-      <div id="chart-noise"><div class="empty">No telemetry history yet.</div></div>
-    </div>
-  </div>
-  <div class="legend" id="chart-legend"></div>
+  <div class="legend sticky" id="chart-legend"></div>
+  <div id="tel-charts"><div class="panel chart"><div class="empty">No telemetry history yet.</div></div></div>
 </section>
 
 <footer>
@@ -455,9 +457,7 @@ function renderTelemetry(){
     sub.textContent = "Radio telemetry is not published yet. CoreScope metrics above are still live.";
     box.innerHTML = '<div class="tel-un">Telemetry unavailable.</div>';
     upd.textContent = "";
-    document.getElementById("chart-batt").innerHTML = '<div class="empty">No telemetry history yet.</div>';
-    document.getElementById("chart-noise").innerHTML = '<div class="empty">No telemetry history yet.</div>';
-    document.getElementById("chart-legend").innerHTML = "";
+    renderCharts();
     return;
   }
   upd.textContent = "Telemetry " + (TEL.updated_at ? pt(TEL.updated_at) : "—");
@@ -484,51 +484,135 @@ function renderTelemetry(){
     <thead><tr><th>Repeater</th><th>Batt V</th><th>Temp °C</th><th>Uptime</th><th>Noise dBm</th><th>SNR dB</th><th>RSSI dBm</th><th>TX %</th><th>RX %</th><th>Polled</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
-  drawHistory("chart-batt", "battery_v", 2);
-  drawHistory("chart-noise", "noise_floor", 0);
-  document.getElementById("chart-legend").innerHTML = ORDER.map(s => `<span><i style="background:${COLORS[s]}"></i>${esc(NAMES[s])}</span>`).join("");
+  renderCharts();
 }
-function seriesFor(key){
+// ---- Telemetry charts: one chart per metric, all repeaters as series ----
+const GAP_MS = 3.5 * 3600e3; // break the line across gaps longer than this
+const CHART_GROUPS = [
+  {title:"Power & health", sub:"Battery, board temperature, uptime and transmit queue at each poll.", metrics:[
+    {key:"battery_v", label:"Battery", unit:"V", d:2, kind:"gauge"},
+    {key:"temperature_c", label:"Temperature", unit:"°C", d:1, kind:"gauge"},
+    {key:"uptime_s", label:"Uptime", unit:"days", d:1, kind:"gauge", scale:1/86400},
+    {key:"tx_queue", label:"TX queue length", unit:"pkts", d:0, kind:"gauge"},
+  ]},
+  {title:"Radio", sub:"Noise floor and the signal of the last packet heard.", metrics:[
+    {key:"noise_floor", label:"Noise floor", unit:"dBm", d:0, kind:"gauge"},
+    {key:"last_snr", label:"Last SNR", unit:"dB", d:1, kind:"gauge"},
+    {key:"last_rssi", label:"Last RSSI", unit:"dBm", d:0, kind:"gauge"},
+  ]},
+  {title:"Airtime", sub:"Duty cycle as reported, and airtime used between polls.", metrics:[
+    {key:"tx_duty_pct", label:"TX duty cycle", unit:"%", d:1, kind:"gauge"},
+    {key:"rx_duty_pct", label:"RX duty cycle", unit:"%", d:1, kind:"gauge"},
+    {key:"tx_airtime_s", label:"TX airtime between polls", unit:"% of time", d:1, kind:"air"},
+    {key:"rx_airtime_s", label:"RX airtime between polls", unit:"% of time", d:1, kind:"air"},
+  ]},
+  {title:"Traffic (per hour)", sub:"Counters are cumulative since boot; these are deltas per hour between polls.", metrics:[
+    {key:"packets_recv", label:"Packets received", unit:"/h", d:0, kind:"rate"},
+    {key:"packets_sent", label:"Packets sent", unit:"/h", d:0, kind:"rate"},
+    {key:"recv_flood", label:"Flood received", unit:"/h", d:0, kind:"rate"},
+    {key:"sent_flood", label:"Flood relayed (sent)", unit:"/h", d:0, kind:"rate"},
+    {key:"recv_direct", label:"Direct received", unit:"/h", d:0, kind:"rate"},
+    {key:"sent_direct", label:"Direct sent", unit:"/h", d:0, kind:"rate"},
+  ]},
+  {title:"Collisions & drops", sub:"Receive errors, duplicates and full-queue events per hour, plus collision ratios per interval.", metrics:[
+    {key:"err_ratio", label:"Receive error ratio", unit:"%", d:1, kind:"ratio", num:"recv_errors", den:["packets_recv","recv_errors"]},
+    {key:"dup_ratio", label:"Flood duplicate ratio", unit:"%", d:1, kind:"ratio", num:"flood_dups", den:["recv_flood"]},
+    {key:"recv_errors", label:"Receive errors", unit:"/h", d:0, kind:"rate"},
+    {key:"flood_dups", label:"Flood duplicates", unit:"/h", d:0, kind:"rate"},
+    {key:"direct_dups", label:"Direct duplicates", unit:"/h", d:1, kind:"rate"},
+    {key:"full_events", label:"Queue full events", unit:"/h", d:2, kind:"rate"},
+  ]},
+];
+function histPoints(slug){
   const hist = TEL_HIST && TEL_HIST.repeaters;
-  if(!hist) return {};
-  const out = {};
-  for(const slug of ORDER){
-    const pts = hist[slug] || [];
-    out[slug] = pts.map(p => {
-      const t = p && p.t ? Date.parse(p.t) : NaN;
-      const v = p ? Number(p[key]) : NaN;
-      return {t, v};
-    }).filter(p => Number.isFinite(p.t) && Number.isFinite(p.v));
+  const pts = (hist && hist[slug]) || [];
+  return pts.map(p => ({...p, _t: p && p.t ? Date.parse(p.t) : NaN}))
+    .filter(p => Number.isFinite(p._t)).sort((a,b) => a._t - b._t);
+}
+const fin = v => v != null && v !== "" && Number.isFinite(Number(v));
+function rebooted(a, b, keys){
+  if(fin(a.uptime_s) && fin(b.uptime_s) && Number(b.uptime_s) < Number(a.uptime_s)) return true;
+  return keys.some(k => Number(b[k]) < Number(a[k]));
+}
+function metricSeries(m, slug){
+  const pts = histPoints(slug);
+  const out = [];
+  if(m.kind === "gauge"){
+    for(const p of pts) if(fin(p[m.key])) out.push({t:p._t, v:Number(p[m.key]) * (m.scale || 1)});
+    return out;
+  }
+  const keys = m.kind === "ratio" ? [m.num, ...m.den] : [m.key];
+  const usable = pts.filter(p => keys.every(k => fin(p[k])));
+  for(let i = 1; i < usable.length; i++){
+    const a = usable[i-1], b = usable[i];
+    const dtMs = b._t - a._t;
+    if(dtMs <= 0) continue;
+    if(rebooted(a, b, keys)){ out.push({t:b._t, v:null}); continue; }
+    const dlt = k => Number(b[k]) - Number(a[k]);
+    let v;
+    if(m.kind === "rate") v = dlt(m.key) / (dtMs / 3600e3);
+    else if(m.kind === "air") v = dlt(m.key) / (dtMs / 1000) * 100;
+    else {
+      const den = m.den.reduce((s,k) => s + dlt(k), 0);
+      if(den <= 0) continue;
+      v = dlt(m.num) / den * 100;
+    }
+    if(Number.isFinite(v)) out.push({t:b._t, v, from:a._t});
   }
   return out;
 }
-function drawHistory(elId, key, digits){
-  const el = document.getElementById(elId);
-  const series = seriesFor(key);
-  const any = ORDER.some(s => (series[s]||[]).length >= 1);
-  if(!any){ el.innerHTML = '<div class="empty">No telemetry history yet.</div>'; return; }
-  const all = ORDER.flatMap(s => series[s]||[]);
-  const tMin = Math.min(...all.map(p=>p.t)), tMax = Math.max(...all.map(p=>p.t));
+function fmtVal(v, d){ return Number(v).toLocaleString("en-US",{maximumFractionDigits:d, minimumFractionDigits:d}); }
+function chartSvg(series, d, tMin, tMax, label){
+  const all = ORDER.flatMap(s => (series[s]||[]).filter(p => p.v != null));
+  if(!all.length) return '<div class="empty">No history for this metric yet.</div>';
   let vMin = Math.min(...all.map(p=>p.v)), vMax = Math.max(...all.map(p=>p.v));
-  if(vMin === vMax){ vMin -= 1; vMax += 1; }
-  const w=520,h=160,pl=44,pr=12,ptop=12,pb=24;
+  if(vMin === vMax){ const pad = Math.abs(vMin) * 0.05 || 1; vMin -= pad; vMax += pad; }
+  else { const pad = (vMax - vMin) * 0.08; vMin -= pad; vMax += pad; }
+  const w=520,h=200,pl=56,pr=12,ptop=10,pb=24;
   const x = t => pl + ((t-tMin)/Math.max(1,tMax-tMin))*(w-pl-pr);
   const y = v => ptop + (1 - (v-vMin)/(vMax-vMin))*(h-ptop-pb);
   const grid = [0,0.5,1].map(f=>{
-    const vv = vMin + (vMax-vMin)*f;
-    const yy = y(vv).toFixed(1);
-    return `<line x1="${pl}" x2="${w-pr}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/>
-      <text x="${pl-6}" y="${yy}" text-anchor="end" dominant-baseline="middle" fill="var(--mut)" font-size="10">${vv.toFixed(digits)}</text>`;
+    const vv = vMin + (vMax-vMin)*f, yy = y(vv).toFixed(1);
+    return `<line x1="${pl}" x2="${w-pr}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${yy}" text-anchor="end" dominant-baseline="middle" fill="var(--mut)" font-size="13">${esc(fmtVal(vv, Math.min(d+1, Math.abs(vMax-vMin) < 10 ? Math.max(d,1) : d)))}</text>`;
   }).join("");
   const paths = ORDER.map(slug=>{
     const pts = series[slug]||[];
-    if(pts.length < 1) return "";
-    const d = pts.map((p,i)=> (i?"L":"M")+x(p.t).toFixed(1)+","+y(p.v).toFixed(1)).join(" ");
-    const dots = pts.map(p=> `<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="2.2" fill="${COLORS[slug]}"/>`).join("");
-    return `<path d="${d}" fill="none" stroke="${COLORS[slug]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${dots}`;
+    let dstr = "", prev = null, dots = "";
+    for(const p of pts){
+      if(p.v == null){ prev = null; continue; }
+      const X = x(p.t).toFixed(1), Y = y(p.v).toFixed(1);
+      dstr += (prev && p.t - prev.t <= GAP_MS ? "L" : "M") + X + "," + Y + " ";
+      if(pts.length <= 60) dots += `<circle cx="${X}" cy="${Y}" r="2" fill="${COLORS[slug]}"/>`;
+      prev = p;
+    }
+    return dstr ? `<path d="${dstr}" fill="none" stroke="${COLORS[slug]}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>${dots}` : "";
   }).join("");
-  const tLabel = (ms, anchor) => `<text x="${anchor==="end"?w-pr:pl}" y="${h-6}" text-anchor="${anchor}" fill="var(--mut)" font-size="10">${esc(pt(new Date(ms).toISOString()))}</text>`;
-  el.innerHTML = `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${esc(key)} history">${grid}${paths}${tLabel(tMin,"start")}${tMax!==tMin?tLabel(tMax,"end"):""}</svg>`;
+  const tl = (ms, anchor, xx) => `<text x="${xx}" y="${h-6}" text-anchor="${anchor}" fill="var(--mut)" font-size="13">${esc(pt(new Date(ms).toISOString()).replace(" PT",""))}</text>`;
+  const mid = tMin + (tMax - tMin)/2;
+  const tls = tl(tMin,"start",pl) + (tMax - tMin > 6*3600e3 ? tl(mid,"middle",x(mid).toFixed(1)) : "") + (tMax !== tMin ? tl(tMax,"end",w-pr) : "");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(label)} history">${grid}${paths}${tls}</svg>`;
+}
+function renderCharts(){
+  const host = document.getElementById("tel-charts");
+  const leg = document.getElementById("chart-legend");
+  const any = TEL_HIST && TEL_HIST.repeaters && ORDER.some(s => histPoints(s).length);
+  if(!any){ host.innerHTML = '<div class="panel chart"><div class="empty">No telemetry history yet.</div></div>'; leg.innerHTML = ""; return; }
+  const ts = ORDER.flatMap(s => histPoints(s).map(p => p._t));
+  const tMin = Math.min(...ts), tMax = Math.max(...ts);
+  leg.innerHTML = ORDER.map(s => `<span><i style="background:${COLORS[s]}"></i>${esc(NAMES[s])}</span>`).join("") +
+    `<span>· times PT · ${esc(pt(new Date(tMin).toISOString()))} → ${esc(pt(new Date(tMax).toISOString()))}</span>`;
+  host.innerHTML = CHART_GROUPS.map(g => {
+    const cards = g.metrics.map(m => {
+      const series = {};
+      for(const s of ORDER) series[s] = metricSeries(m, s);
+      const latest = ORDER.map(s => {
+        const v = [...series[s]].reverse().find(p => p.v != null);
+        return `<span><i style="background:${COLORS[s]}"></i>${esc(NAMES[s])} <b>${v ? esc(fmtVal(v.v, m.d)) : "n/a"}</b></span>`;
+      }).join("");
+      return `<div class="panel chart"><h3>${esc(m.label)}<small>${esc(m.unit)}</small></h3><div class="latest">${latest}</div>${chartSvg(series, m.d, tMin, tMax, m.label)}</div>`;
+    }).join("");
+    return `<div class="cgroup"><h3>${esc(g.title)}</h3><p>${esc(g.sub)}</p><div class="charts">${cards}</div></div>`;
+  }).join("");
 }
 async function load(){
   try{
