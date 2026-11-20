@@ -1,5 +1,5 @@
 {
-    "updated_at":  "2026-11-20T02:50:22-08:00",
+    "updated_at":  "2026-11-20T03:51:30-08:00",
     "source":  "reed-export/repeater_status.json",
     "repeaters":  [
                       {
@@ -8,16 +8,16 @@
                           "slug":  "saigon",
                           "ok":  true,
                           "stale":  false,
-                          "polled_at":  "2026-11-20T02:46:17-08:00",
-                          "ok_at":  "2026-11-20T02:46:17-08:00",
+                          "polled_at":  "2026-11-20T03:46:40-08:00",
+                          "ok_at":  "2026-11-20T03:46:40-08:00",
                           "battery_v":  4.08,
-                          "temperature_c":  9.0,
-                          "uptime_s":  389411,
-                          "noise_floor":  -118,
-                          "last_snr":  12.0,
-                          "last_rssi":  -65,
-                          "tx_duty_pct":  1.66,
-                          "rx_duty_pct":  10.56
+                          "temperature_c":  8.5,
+                          "uptime_s":  393034,
+                          "noise_floor":  -119,
+                          "last_snr":  12.25,
+                          "last_rssi":  -66,
+                          "tx_duty_pct":  1.19,
+                          "rx_duty_pct":  7.92
                       },
                       {
                           "name":  "Mr. DuPont",
@@ -25,7 +25,7 @@
                           "slug":  "dupont",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T02:48:15-08:00",
+                          "polled_at":  "2026-11-20T03:49:31-08:00",
                           "ok_at":  "2026-11-20T01:47:37-08:00",
                           "battery_v":  4.19,
                           "uptime_s":  125071,
@@ -41,7 +41,7 @@
                           "slug":  "funky",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T02:50:22-08:00",
+                          "polled_at":  "2026-11-20T03:51:30-08:00",
                           "ok_at":  "2026-11-20T00:36:13-08:00",
                           "battery_v":  4.04,
                           "uptime_s":  200792,
@@ -57,7 +57,7 @@
                           "slug":  "wardcamp",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T02:50:22-08:00",
+                          "polled_at":  "2026-11-20T03:51:30-08:00",
                           "ok_at":  null
                       }
                   ]
