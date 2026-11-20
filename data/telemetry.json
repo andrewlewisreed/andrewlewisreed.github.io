@@ -1,5 +1,5 @@
 {
-    "updated_at":  "2026-11-20T05:52:09-08:00",
+    "updated_at":  "2026-11-20T06:51:49-08:00",
     "source":  "reed-export/repeater_status.json",
     "repeaters":  [
                       {
@@ -8,16 +8,16 @@
                           "slug":  "saigon",
                           "ok":  true,
                           "stale":  false,
-                          "polled_at":  "2026-11-20T05:47:27-08:00",
-                          "ok_at":  "2026-11-20T05:47:27-08:00",
+                          "polled_at":  "2026-11-20T06:47:14-08:00",
+                          "ok_at":  "2026-11-20T06:47:14-08:00",
                           "battery_v":  4.06,
                           "temperature_c":  8.0,
-                          "uptime_s":  400280,
-                          "noise_floor":  -119,
-                          "last_snr":  12.0,
-                          "last_rssi":  -65,
-                          "tx_duty_pct":  3.09,
-                          "rx_duty_pct":  17.56
+                          "uptime_s":  403868,
+                          "noise_floor":  -111,
+                          "last_snr":  12.25,
+                          "last_rssi":  -76,
+                          "tx_duty_pct":  2.54,
+                          "rx_duty_pct":  17.34
                       },
                       {
                           "name":  "Mr. DuPont",
@@ -25,7 +25,7 @@
                           "slug":  "dupont",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T05:49:24-08:00",
+                          "polled_at":  "2026-11-20T06:50:06-08:00",
                           "ok_at":  "2026-11-20T04:49:40-08:00",
                           "battery_v":  3.81,
                           "uptime_s":  135994,
@@ -41,15 +41,15 @@
                           "slug":  "funky",
                           "ok":  true,
                           "stale":  false,
-                          "polled_at":  "2026-11-20T05:52:09-08:00",
-                          "ok_at":  "2026-11-20T05:52:09-08:00",
-                          "battery_v":  4.05,
-                          "uptime_s":  219748,
-                          "noise_floor":  -117,
-                          "last_snr":  2.75,
+                          "polled_at":  "2026-11-20T06:51:49-08:00",
+                          "ok_at":  "2026-11-20T06:51:49-08:00",
+                          "battery_v":  4.03,
+                          "uptime_s":  223328,
+                          "noise_floor":  -113,
+                          "last_snr":  1.25,
                           "last_rssi":  -114,
-                          "tx_duty_pct":  1.75,
-                          "rx_duty_pct":  9.8
+                          "tx_duty_pct":  2.4,
+                          "rx_duty_pct":  14.5
                       },
                       {
                           "name":  "Wardcamp",
@@ -57,7 +57,7 @@
                           "slug":  "wardcamp",
                           "ok":  false,
                           "stale":  true,
-                          "polled_at":  "2026-11-20T05:52:09-08:00",
+                          "polled_at":  "2026-11-20T06:51:49-08:00",
                           "ok_at":  null
                       }
                   ]
