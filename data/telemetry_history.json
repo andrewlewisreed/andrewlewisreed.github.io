@@ -1,5 +1,5 @@
 {
-"updated_at": "2026-11-22T19:07:18-08:00",
+"updated_at": "2026-11-22T20:09:14-08:00",
 "days": 30,
 "fields": ["battery_v","temperature_c","uptime_s","noise_floor","last_snr","last_rssi","tx_duty_pct","rx_duty_pct","tx_airtime_s","rx_airtime_s","packets_recv","packets_sent","recv_flood","sent_flood","recv_direct","sent_direct","flood_dups","direct_dups","recv_errors","full_events","tx_queue"],
 "repeaters": {
@@ -243,7 +243,8 @@
 {"t":"2026-11-22T15:32:32-08:00"},
 {"t":"2026-11-22T16:32:07-08:00"},
 {"t":"2026-11-22T17:33:22-08:00"},
-{"t":"2026-11-22T19:06:10-08:00"}
+{"t":"2026-11-22T19:06:10-08:00"},
+{"t":"2026-11-22T20:08:06-08:00"}
 ]
 }
 }
