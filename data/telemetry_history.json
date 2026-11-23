@@ -1,5 +1,5 @@
 {
-"updated_at": "2026-11-23T09:38:14-08:00",
+"updated_at": "2026-11-23T10:39:03-08:00",
 "days": 30,
 "fields": ["battery_v","temperature_c","uptime_s","noise_floor","last_snr","last_rssi","tx_duty_pct","rx_duty_pct","tx_airtime_s","rx_airtime_s","packets_recv","packets_sent","recv_flood","sent_flood","recv_direct","sent_direct","flood_dups","direct_dups","recv_errors","full_events","tx_queue"],
 "repeaters": {
@@ -102,7 +102,8 @@
 {"t":"2026-11-23T05:31:25-08:00","battery_v":4.09,"temperature_c":13.5,"uptime_s":658521,"noise_floor":-114,"last_snr":12.25,"last_rssi":-83,"tx_duty_pct":1.93,"rx_duty_pct":11.8,"tx_airtime_s":19969,"rx_airtime_s":118927,"packets_recv":378488,"packets_sent":61876,"recv_flood":364141,"sent_flood":60110,"recv_direct":13951,"sent_direct":1766,"flood_dups":40438,"direct_dups":182,"recv_errors":239104,"full_events":2,"tx_queue":0},
 {"t":"2026-11-23T07:32:32-08:00","battery_v":4.1,"temperature_c":18,"uptime_s":665788,"noise_floor":-111,"last_snr":12.25,"last_rssi":-84,"tx_duty_pct":2.04,"rx_duty_pct":13.2,"tx_airtime_s":20117,"rx_airtime_s":119886,"packets_recv":381558,"packets_sent":62338,"recv_flood":367124,"sent_flood":60566,"recv_direct":14033,"sent_direct":1772,"flood_dups":42950,"direct_dups":182,"recv_errors":240947,"full_events":2,"tx_queue":0},
 {"t":"2026-11-23T08:32:34-08:00","battery_v":4.12,"temperature_c":26.7,"uptime_s":669390,"noise_floor":-115,"last_snr":12.75,"last_rssi":-83,"tx_duty_pct":2.86,"rx_duty_pct":17.1,"tx_airtime_s":20220,"rx_airtime_s":120502,"packets_recv":383566,"packets_sent":62665,"recv_flood":369091,"sent_flood":60884,"recv_direct":14072,"sent_direct":1781,"flood_dups":44596,"direct_dups":182,"recv_errors":242211,"full_events":2,"tx_queue":0},
-{"t":"2026-11-23T09:32:49-08:00","battery_v":4.12,"temperature_c":33,"uptime_s":673005,"noise_floor":-115,"last_snr":10.75,"last_rssi":-84,"tx_duty_pct":3.02,"rx_duty_pct":17.34,"tx_airtime_s":20329,"rx_airtime_s":121129,"packets_recv":385537,"packets_sent":63000,"recv_flood":371042,"sent_flood":61216,"recv_direct":14090,"sent_direct":1784,"flood_dups":46203,"direct_dups":182,"recv_errors":243445,"full_events":2,"tx_queue":0}
+{"t":"2026-11-23T09:32:49-08:00","battery_v":4.12,"temperature_c":33,"uptime_s":673005,"noise_floor":-115,"last_snr":10.75,"last_rssi":-84,"tx_duty_pct":3.02,"rx_duty_pct":17.34,"tx_airtime_s":20329,"rx_airtime_s":121129,"packets_recv":385537,"packets_sent":63000,"recv_flood":371042,"sent_flood":61216,"recv_direct":14090,"sent_direct":1784,"flood_dups":46203,"direct_dups":182,"recv_errors":243445,"full_events":2,"tx_queue":0},
+{"t":"2026-11-23T10:33:34-08:00","battery_v":4.11,"temperature_c":37.5,"uptime_s":676651,"noise_floor":-111,"last_snr":4,"last_rssi":-84,"tx_duty_pct":3.26,"rx_duty_pct":19.94,"tx_airtime_s":20448,"rx_airtime_s":121856,"packets_recv":387771,"packets_sent":63363,"recv_flood":373232,"sent_flood":61569,"recv_direct":14134,"sent_direct":1794,"flood_dups":48029,"direct_dups":183,"recv_errors":244748,"full_events":2,"tx_queue":1}
 ],
 "dupont": [
 {"t":"2026-11-19T02:45:54-08:00","battery_v":4.18,"noise_floor":-96},
@@ -168,7 +169,8 @@
 {"t":"2026-11-23T03:32:33-08:00","battery_v":4.18,"uptime_s":390571,"noise_floor":-95,"last_snr":9.5,"last_rssi":-83,"tx_duty_pct":1.27,"rx_duty_pct":6.08,"tx_airtime_s":11489,"rx_airtime_s":44225,"packets_recv":141330,"packets_sent":35093,"recv_flood":139311,"sent_flood":34854,"recv_direct":1860,"sent_direct":239,"flood_dups":38233,"direct_dups":35,"recv_errors":93013,"full_events":2,"tx_queue":0},
 {"t":"2026-11-23T04:35:12-08:00","battery_v":4.18,"uptime_s":394328,"noise_floor":-97,"last_snr":10.25,"last_rssi":-83,"tx_duty_pct":1.41,"rx_duty_pct":6.76,"tx_airtime_s":11542,"rx_airtime_s":44479,"packets_recv":142147,"packets_sent":35255,"recv_flood":140107,"sent_flood":35015,"recv_direct":1880,"sent_direct":240,"flood_dups":38864,"direct_dups":36,"recv_errors":93482,"full_events":2,"tx_queue":0},
 {"t":"2026-11-23T06:35:18-08:00","battery_v":4.18,"uptime_s":401535,"noise_floor":-120,"last_snr":-0.75,"last_rssi":-94,"tx_duty_pct":1.68,"rx_duty_pct":7.49,"tx_airtime_s":11663,"rx_airtime_s":45019,"packets_recv":143875,"packets_sent":35621,"recv_flood":141806,"sent_flood":35381,"recv_direct":1904,"sent_direct":240,"flood_dups":40189,"direct_dups":36,"recv_errors":94535,"full_events":2,"tx_queue":0},
-{"t":"2026-11-23T09:34:10-08:00","battery_v":4.17,"temperature_c":35,"uptime_s":412287,"noise_floor":-120,"last_snr":-2,"last_rssi":-90,"tx_duty_pct":2.74,"rx_duty_pct":10.53,"tx_airtime_s":11958,"rx_airtime_s":46151,"packets_recv":147510,"packets_sent":36534,"recv_flood":145419,"sent_flood":36293,"recv_direct":1923,"sent_direct":241,"flood_dups":42869,"direct_dups":36,"recv_errors":96827,"full_events":2,"tx_queue":0}
+{"t":"2026-11-23T09:34:10-08:00","battery_v":4.17,"temperature_c":35,"uptime_s":412287,"noise_floor":-120,"last_snr":-2,"last_rssi":-90,"tx_duty_pct":2.74,"rx_duty_pct":10.53,"tx_airtime_s":11958,"rx_airtime_s":46151,"packets_recv":147510,"packets_sent":36534,"recv_flood":145419,"sent_flood":36293,"recv_direct":1923,"sent_direct":241,"flood_dups":42869,"direct_dups":36,"recv_errors":96827,"full_events":2,"tx_queue":0},
+{"t":"2026-11-23T10:35:00-08:00","battery_v":4.15,"temperature_c":40.7,"uptime_s":415931,"noise_floor":-120,"last_snr":2,"last_rssi":-90,"tx_duty_pct":3.24,"rx_duty_pct":11.83,"tx_airtime_s":12076,"rx_airtime_s":46582,"packets_recv":148864,"packets_sent":36885,"recv_flood":146758,"sent_flood":36644,"recv_direct":1935,"sent_direct":241,"flood_dups":43846,"direct_dups":36,"recv_errors":97703,"full_events":2,"tx_queue":0}
 ],
 "funky": [
 {"t":"2026-11-19T02:48:23-08:00","battery_v":3.99,"noise_floor":-118},
@@ -280,7 +282,8 @@
 {"t":"2026-11-23T06:37:15-08:00"},
 {"t":"2026-11-23T07:37:55-08:00"},
 {"t":"2026-11-23T08:36:36-08:00"},
-{"t":"2026-11-23T09:36:17-08:00"}
+{"t":"2026-11-23T09:36:17-08:00"},
+{"t":"2026-11-23T10:36:57-08:00"}
 ]
 }
 }
