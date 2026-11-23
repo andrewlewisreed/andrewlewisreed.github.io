@@ -1,23 +1,23 @@
 {
- "week_of": "2026-11-16T08:05:00-08:00",
- "captured_at": "2026-11-19T10:26:52Z",
+ "week_of": "2026-11-23T08:05:00-08:00",
+ "captured_at": "2026-11-23T16:05:59Z",
  "timezone": "America/Los_Angeles",
- "note": "Seeded with current relays/24h and two-way counts; first weekly refresh is the first run on or after Monday 8:05 AM PT.",
+ "note": "Weekly baseline captured at the first update on or after Monday 8:05 AM PT.",
  "repeaters": {
   "dupont": {
-   "relays_24h": 4364,
-   "two_way": 54
+   "relays_24h": 4854,
+   "two_way": 43
   },
   "saigon": {
-   "relays_24h": 2740,
-   "two_way": 60
+   "relays_24h": 3075,
+   "two_way": 64
   },
   "funky": {
-   "relays_24h": 523,
-   "two_way": 24
+   "relays_24h": 408,
+   "two_way": 19
   },
   "wardcamp": {
-   "relays_24h": 814,
+   "relays_24h": 691,
    "two_way": 7
   }
  }
