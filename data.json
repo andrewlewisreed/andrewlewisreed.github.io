@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-23T16:04:45Z",
+ "updated_at": "2026-11-23T17:04:32Z",
  "repeaters": [
   {
    "name": "Mr. DuPont",
@@ -7,19 +7,19 @@
    "slug": "dupont",
    "pubkey": "2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2af8f8abe8cdebecf0a1226f77a329a2df0e0be1e503c4540a057877032e91c0",
-   "last_heard": "2026-11-23T15:53:00Z",
+   "last_heard": "2026-11-23T16:30:39Z",
    "online": true,
-   "relays_24h": 4854,
-   "relays_1h": 114,
+   "relays_24h": 4681,
+   "relays_1h": 19,
    "status_stale": false,
    "usefulness_grade": "C",
-   "usefulness_score": 0.3635533328310949,
-   "traffic_share_score": 0.27644305128786784,
-   "bridge_score": 0.06030973020356482,
-   "coverage_score": 0.8638741125762378,
+   "usefulness_score": 0.3645395405017036,
+   "traffic_share_score": 0.27811123205307625,
+   "bridge_score": 0.06291595964111892,
+   "coverage_score": 0.8636543433032856,
    "redundancy_score": 0.0,
    "usefulness_rank": 37,
-   "relay_rank": 56,
+   "relay_rank": 57,
    "ranked_of": 913,
    "heard_nodes": 46,
    "two_way": 43,
@@ -45,7 +45,6 @@
    "avail_pct": 98.2,
    "avail_stale": false,
    "relays_spark": [
-    4776,
     4713,
     4655,
     4645,
@@ -92,7 +91,8 @@
     4962,
     4988,
     4950,
-    4854
+    4854,
+    4681
    ]
   },
   {
@@ -101,19 +101,19 @@
    "slug": "saigon",
    "pubkey": "01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/01d6facbe50e8a082f50f68827ab6773c2a86226fc87b57fddce21012d36a6a1",
-   "last_heard": "2026-11-23T15:53:13Z",
+   "last_heard": "2026-11-23T16:31:05Z",
    "online": true,
-   "relays_24h": 3075,
-   "relays_1h": 88,
+   "relays_24h": 2991,
+   "relays_1h": 16,
    "status_stale": false,
    "usefulness_grade": "C",
-   "usefulness_score": 0.4252241712976346,
-   "traffic_share_score": 0.1815079086840857,
-   "bridge_score": 0.11661634362520698,
-   "coverage_score": 0.8545627824054678,
+   "usefulness_score": 0.4267349473900894,
+   "traffic_share_score": 0.18216969885450682,
+   "bridge_score": 0.12187935011227735,
+   "coverage_score": 0.8544183256151258,
    "redundancy_score": 0.3663054187192118,
-   "usefulness_rank": 14,
-   "relay_rank": 105,
+   "usefulness_rank": 13,
+   "relay_rank": 102,
    "ranked_of": 913,
    "heard_nodes": 90,
    "two_way": 64,
@@ -124,12 +124,12 @@
    "reach_stale": false,
    "snr_median": 3.6,
    "snr_top": 11.5,
-   "snr_count": 49,
+   "snr_count": 48,
    "snr_hist": [
     0,
     4,
     7,
-    32,
+    31,
     4,
     2
    ],
@@ -139,7 +139,6 @@
    "avail_pct": 97.6,
    "avail_stale": false,
    "relays_spark": [
-    2938,
     2910,
     2894,
     2884,
@@ -186,7 +185,8 @@
     3086,
     3138,
     3133,
-    3075
+    3075,
+    2991
    ]
   },
   {
@@ -197,17 +197,17 @@
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/2823823887846a995da49684adc7c0c9f64a7708d94c706d3435311eee96a6b0",
    "last_heard": "2026-11-23T12:49:20Z",
    "online": true,
-   "relays_24h": 408,
-   "relays_1h": 8,
+   "relays_24h": 387,
+   "relays_1h": 0,
    "status_stale": false,
    "usefulness_grade": "D",
-   "usefulness_score": 0.29475071000725334,
-   "traffic_share_score": 0.020282114206760016,
-   "bridge_score": 0.039427291321710335,
-   "coverage_score": 0.7273823533311681,
+   "usefulness_score": 0.2952138073088256,
+   "traffic_share_score": 0.02035971595915617,
+   "bridge_score": 0.04113110539845758,
+   "coverage_score": 0.7271976589950185,
    "redundancy_score": 0.3663054187192118,
    "usefulness_rank": 86,
-   "relay_rank": 515,
+   "relay_rank": 514,
    "ranked_of": 913,
    "heard_nodes": 34,
    "two_way": 19,
@@ -230,10 +230,9 @@
    "snr_stale": false,
    "observers": 44,
    "observers_stale": false,
-   "avail_pct": 67.3,
+   "avail_pct": 66.7,
    "avail_stale": false,
    "relays_spark": [
-    348,
     354,
     348,
     360,
@@ -280,7 +279,8 @@
     424,
     422,
     418,
-    408
+    408,
+    387
    ]
   },
   {
@@ -291,17 +291,17 @@
    "corescope_url": "https://corescope.wcmesh.com/#/nodes/f3e203f3938f67e8415b5ae4d2f301a90b8f94970367b46158a0172fb1f28571",
    "last_heard": "2026-11-23T14:34:11Z",
    "online": true,
-   "relays_24h": 691,
-   "relays_1h": 14,
+   "relays_24h": 680,
+   "relays_1h": 11,
    "status_stale": false,
    "usefulness_grade": "F",
-   "usefulness_score": 0.1418212421071155,
-   "traffic_share_score": 0.028953826483264937,
+   "usefulness_score": 0.14187200728595697,
+   "traffic_share_score": 0.02922303426113098,
    "bridge_score": 0.0,
-   "coverage_score": 0.5130345820296984,
+   "coverage_score": 0.5129526870888379,
    "redundancy_score": 0.0,
-   "usefulness_rank": 509,
-   "relay_rank": 370,
+   "usefulness_rank": 508,
+   "relay_rank": 361,
    "ranked_of": 913,
    "heard_nodes": 23,
    "two_way": 7,
@@ -316,8 +316,8 @@
    "snr_hist": [
     0,
     0,
-    3,
-    7,
+    2,
+    8,
     1,
     1
    ],
@@ -327,7 +327,6 @@
    "avail_pct": 41.1,
    "avail_stale": false,
    "relays_spark": [
-    598,
     597,
     595,
     584,
@@ -374,7 +373,8 @@
     694,
     699,
     706,
-    691
+    691,
+    680
    ]
   }
  ],
@@ -384,7 +384,7 @@
   "funky",
   "wardcamp"
  ],
- "summary": "REED mesh: Saigon 3.1k rly/24h, DuPont 4.9k, Funky 408, Wardcamp 691",
+ "summary": "REED mesh: Saigon 3k rly/24h, DuPont 4.7k, Funky 387, Wardcamp 680",
  "errors": [],
  "offline_after_hours": 24,
  "snr_bins": [
